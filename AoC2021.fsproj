@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.props" Condition="Exists('packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.props')" />
+    <Import Project="packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.props" Condition="Exists('packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.props')" />
+    <Import Project="packages\xunit.core.2.4.1\build\xunit.core.props" Condition="Exists('packages\xunit.core.2.4.1\build\xunit.core.props')" />
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <Import Project="packages\FSharp.Compiler.Tools.10.0.2\build\FSharp.Compiler.Tools.props" Condition="Exists('packages\FSharp.Compiler.Tools.10.0.2\build\FSharp.Compiler.Tools.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{FCE5843F-335C-4F1B-9244-2587B4FC7F03}</ProjectGuid>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>AoC2021</RootNamespace>
+        <AssemblyName>AoC2021</AssemblyName>
+        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <DocumentationFile>bin\$(Configuration)\$(AssemblyName).xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>portable</DebugType>
+        <Optimize>false</Optimize>
+        <Tailcalls>false</Tailcalls>
+        <OutputPath>bin\$(Configuration)\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <WarningLevel>3</WarningLevel>
+        <OtherFlags>--warnon:1182</OtherFlags>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <Tailcalls>true</Tailcalls>
+        <OutputPath>bin\$(Configuration)\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <WarningLevel>3</WarningLevel>
+        <OtherFlags>--warnon:1182</OtherFlags>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.CodeCoverage.Shim, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <HintPath>packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\lib\net45\Microsoft.VisualStudio.CodeCoverage.Shim.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="mscorlib" />
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Numerics" />
+        <Reference Include="FSharp.Core">
+            <HintPath>packages\FSharp.Core.4.5.2\lib\net45\FSharp.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+          <HintPath>packages\xunit.abstractions.2.0.3\lib\net35\xunit.abstractions.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="xunit.assert, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+          <HintPath>packages\xunit.assert.2.4.1\lib\netstandard1.1\xunit.assert.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="xunit.core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+          <HintPath>packages\xunit.extensibility.core.2.4.1\lib\net452\xunit.core.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="xunit.execution.desktop, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+          <HintPath>packages\xunit.extensibility.execution.2.4.1\lib\net452\xunit.execution.desktop.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="packages.config" />
+        <Compile Include="AssemblyInfo.fs" />
+        <Compile Include="Utils.fs" />
+        <Compile Include="Day1.fs" />
+        <Compile Include="Tests.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+    <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+      <PropertyGroup>
+        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+      </PropertyGroup>
+      <Error Condition="!Exists('packages\xunit.core.2.4.1\build\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\xunit.core.2.4.1\build\xunit.core.props'))" />
+      <Error Condition="!Exists('packages\xunit.core.2.4.1\build\xunit.core.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\xunit.core.2.4.1\build\xunit.core.targets'))" />
+      <Error Condition="!Exists('packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.props'))" />
+      <Error Condition="!Exists('packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.targets'))" />
+      <Error Condition="!Exists('packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.props'))" />
+      <Error Condition="!Exists('packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.targets'))" />
+    </Target>
+    <Import Project="packages\xunit.core.2.4.1\build\xunit.core.targets" Condition="Exists('packages\xunit.core.2.4.1\build\xunit.core.targets')" />
+    <Import Project="packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.targets" Condition="Exists('packages\Microsoft.CodeCoverage.17.0.1-release-20211109-01\build\netstandard1.0\Microsoft.CodeCoverage.targets')" />
+    <Import Project="packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.targets" Condition="Exists('packages\Microsoft.NET.Test.Sdk.17.0.1-release-20211109-01\build\net45\Microsoft.NET.Test.Sdk.targets')" />
+</Project>
