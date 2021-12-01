@@ -1,5 +1,24 @@
 module AoC2021.Day1
 
-let day1 () = 0
+open AoC2021.Utils
 
-let day1part2 () = 0
+let increases tup = fst tup < snd tup
+
+let day1 fn () =
+    let input = readInput fn |> Seq.map int
+
+    input
+    |> Seq.pairwise
+    |> Seq.filter increases
+    |> Seq.length
+
+
+let day1part2 fn () =
+    let input = readInput fn |> Seq.map int
+
+    input
+    |> Seq.windowed 3
+    |> Seq.map Array.sum
+    |> Seq.pairwise
+    |> Seq.filter increases
+    |> Seq.length
