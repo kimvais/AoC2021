@@ -24,3 +24,5 @@ type Puzzles(o: ITestOutputHelper) =
     [<Fact>]
     let ``day3 `` () =
         Assert.Equal(198, day3 "test3" ())
+        Assert.Equal(4160394, day3 "3" ())
+        Assert.Equal(230, day3part2 "test3" ())
