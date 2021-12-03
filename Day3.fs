@@ -60,9 +60,9 @@ let getDigit preferred (m: Map<char, int>) =
 
 
 let rec countAndMatchBits preferred (input: seq<string>, index) =
-    match Seq.length input with
-    | 1 -> input |> Seq.exactlyOne
-    | _ ->
+    match Seq.tryExactlyOne input with
+    | Some s -> s
+    | None ->
         let mostCommon =
             input
             |> Seq.map (fun s -> s.[index])
