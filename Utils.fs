@@ -8,11 +8,12 @@ let readLines filePath = File.ReadLines(filePath)
 let readInput (s: string) =
     readLines (__SOURCE_DIRECTORY__ + (sprintf "/input/%s.txt" s))
 
-let getProblem (a: seq<string>): string = a |> Seq.head
+let getProblem (a: seq<string>) : string = a |> Seq.head
 
 module Seq =
     let repeatForever s =
         let c = Seq.cache s
+
         seq {
             while true do
                 yield! c
@@ -22,6 +23,8 @@ module Seq =
         Seq.mapi (fun i v -> (i, v))
         >> Seq.filter (fun v -> f (fst v) (snd v))
         >> Seq.map snd
+
+let split (c: char) (s: string) = s.Split(c)
 
 let splitByLinefeed (s: string) = s.Split '\n'
 

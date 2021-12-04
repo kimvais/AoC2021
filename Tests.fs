@@ -5,6 +5,7 @@ open Xunit.Abstractions
 open AoC2021.Day1
 open AoC2021.Day2
 open AoC2021.Day3
+open AoC2021.Day4
 
 type Puzzles(o: ITestOutputHelper) =
     [<Fact>]
@@ -26,3 +27,9 @@ type Puzzles(o: ITestOutputHelper) =
         Assert.Equal(198, day3 "test3" ())
         Assert.Equal(4160394, day3 "3" ())
         Assert.Equal(230, day3part2 "test3" ())
+        
+    [<Fact>]
+    let ``day 4`` () =
+        Assert.Equal(4512, day4 "test4" ())
+        Assert.Equal(54275, day4 "4" ())
+        Assert.Equal(1924, day4part2 "test4" ())
