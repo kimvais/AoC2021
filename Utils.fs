@@ -24,7 +24,8 @@ module Seq =
         >> Seq.filter (fun v -> f (fst v) (snd v))
         >> Seq.map snd
 
-let split (c: char) (s: string) = s.Split(c)
+let split (c: char) (s: string) = s.Split c
+let splitS (sep: string) (s: string) = Regex.Split (s, sep)
 
 let splitByLinefeed (s: string) = s.Split '\n'
 
