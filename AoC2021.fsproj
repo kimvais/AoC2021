@@ -77,6 +77,16 @@
         <Compile Include="Day5.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="Program.fs" />
+        <Content Include="input\test5.txt" />
+        <Content Include="input\test4.txt" />
+        <Content Include="input\test3.txt" />
+        <Content Include="input\test2.txt" />
+        <Content Include="input\test1.txt" />
+        <Content Include="input\5.txt" />
+        <Content Include="input\4.txt" />
+        <Content Include="input\3.txt" />
+        <Content Include="input\2.txt" />
+        <Content Include="input\1.txt" />
     </ItemGroup>
     <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
