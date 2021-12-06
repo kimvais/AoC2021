@@ -58,4 +58,4 @@ let day5 fn () =
     let coords = vectors' |> Seq.map vectorToCoordinates
     coords |> Seq.iter (plotVectors ventMap)
     printfn "%A" ventMap
-    ventMap |> Array.reduce Array.append |> Seq.filter ((<) 1) |> Seq.length
+    ventMap |> Array.reduce Array.append |> Seq.filter ((<) 1) |> Seq.length |> int64

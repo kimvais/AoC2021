@@ -43,7 +43,7 @@ let solve boardMatcher fn =
     let sumOfNumbers =
         (winningBoard |> List.sumBy List.sum) / 2 // Every number is there twice, because of transpose earlier
 
-    sumOfNumbers * lastNumber
+    sumOfNumbers * lastNumber |> int64
 
 let day4 fn () =
     solve (List.tryFind (List.exists List.isEmpty)) fn

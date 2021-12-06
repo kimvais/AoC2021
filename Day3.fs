@@ -42,7 +42,7 @@ let day3 fn () =
     let gamma = getGamma len bits
     let epsilon = getEpsilon (Seq.length bits) gamma
 
-    gamma * epsilon
+    gamma * epsilon |> int64
 
 let getDigit preferred (m: Map<char, int>) =
     let ones = m.['1']
@@ -81,4 +81,4 @@ let day3part2 fn () =
     let o2 = countAndMatchBits 1 (input, 0) |> asNumber
     let co2 = countAndMatchBits 0 (input, 0) |> asNumber
 
-    o2 * co2
+    o2 * co2 |> int64

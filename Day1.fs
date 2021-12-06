@@ -11,6 +11,7 @@ let day1 fn () =
     |> Seq.pairwise
     |> Seq.filter increases
     |> Seq.length
+    |> int64
 
 
 let day1part2 fn () =
@@ -22,3 +23,4 @@ let day1part2 fn () =
     |> Seq.pairwise
     |> Seq.filter increases
     |> Seq.length
+    |> int64

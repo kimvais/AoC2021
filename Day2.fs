@@ -36,7 +36,7 @@ let solve mover fn =
         input
         |> Seq.fold mover { X = 0; Depth = 0; Aim = 0 }
 
-    finalPosition.X * finalPosition.Depth
+    finalPosition.X * finalPosition.Depth |> int64
 
 let day2 fn () = solve move fn
 let day2part2 fn () = solve move2 fn
