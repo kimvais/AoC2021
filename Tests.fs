@@ -41,7 +41,8 @@ let ``day 5`` () =
     day5 "test5" () |> should equal 5L
     day5 "5" () |> should equal 6666L
     day5part2 "test5" () |> should equal 12L
-    // day5part2 "5" () |> should equal 
+    day5part2 "5" () |> should equal 19081L
+
 
 [<Fact>]
 let ``day 6`` () =

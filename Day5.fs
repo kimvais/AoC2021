@@ -15,9 +15,21 @@ let filterInvalidVectors vec =
     let (x1, y1), (x2, y2) = vecToTuple vec
     x1 = x2 || y1 = y2
 
-let filterInvalidVectors2 vec =
-    let (x1, y1), (x2, y2) = vecToTuple vec
-    x1 = x2 || y1 = y2 || abs (x1 - x2) = abs (y1 - y2)
+let filterInvalidVectors2 _ =
+    true
+
+let intToChar =
+    function
+    | 0 -> "."
+    | n -> string n
+
+let printLine line =
+    line
+    |> Array.map intToChar
+    |> String.concat ""
+    |> printfn "%s"
+
+let printMap map = map |> Array.iter printLine
 
 let vectorToCoordinates ((x1, y1), (x2, y2)) =
     match x1 = x2 with
@@ -29,7 +41,7 @@ let vectorToCoordinates ((x1, y1), (x2, y2)) =
         [ xA .. xB ] |> Seq.map (fun n -> (n, y1))
 
 let vectorToCoordinates2 ((x1, y1), (x2, y2)) =
-    match x1 = x2, y1=y2 with
+    match x1 = x2, y1 = y2 with
     | true, false ->
         let [ yA; yB ] = List.sort [ y1; y2 ]
         [ yA .. yB ] |> Seq.map (fun n -> (x1, n))
@@ -37,14 +49,18 @@ let vectorToCoordinates2 ((x1, y1), (x2, y2)) =
         let [ xA; xB ] = List.sort [ x1; x2 ]
         [ xA .. xB ] |> Seq.map (fun n -> (n, y1))
     | _ ->
-        let xs = match x1 < x2 with
-        | true -> [x1..x2]
-        | false -> [x2..x1] |> List.rev
-        let ys = match y1 < y2 with
-        | true -> [y1..y2]
-        | false -> [y1..y1] |> List.rev
+        let xs =
+            match x1 < x2 with
+            | true -> [ x1 .. x2 ]
+            | false -> [ x2 .. x1 ] |> List.rev
+
+        let ys =
+            match y1 < y2 with
+            | true -> [ y1 .. y2 ]
+            | false -> [ y2 .. y1 ] |> List.rev
+
         Seq.zip xs ys
-       
+
 
 let plotVectors (vecMap: int [] []) coords =
     coords
@@ -80,7 +96,7 @@ let solve filter converter fn () =
     // printfn "%A" ventMap
     let coords = vectors' |> Seq.map converter
     coords |> Seq.iter (plotVectors ventMap)
-    printfn "%A" ventMap
+    printMap ventMap
 
     ventMap
     |> Array.reduce Array.append
