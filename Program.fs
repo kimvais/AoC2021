@@ -8,6 +8,7 @@ open AoC2021.Day4
 open AoC2021.Day5
 open AoC2021.Day6
 open AoC2021.Day7
+open AoC2021.Day8
 
 [<EntryPoint>]
 let main argv =
@@ -24,7 +25,10 @@ let main argv =
     | "5" -> day5 "5" ()
     | "6" -> day6 "6" 80 ()
     | "6b" -> day6 "6" 256 ()
-    | "test" -> day7part2 "7" ()
+    | "7" -> day7 "7"  ()
+    | "7b" -> day7 "7"  ()
+    | "8" -> day8 "8" ()
+    | "test" -> day8part2 "test8" ()
     |> printfn "%d"
     0
    
