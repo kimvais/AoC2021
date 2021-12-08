@@ -2,42 +2,28 @@ module AoC2021.Day8
 
 open AoC2021.Utils
 
-let isOneFourSevenOrEight s =
-    match String.length s with
-    | 2
-    | 3
-    | 4
-    | 7 -> true
+let isOneFourSevenOrEight c =
+    match c with
+    | '1' | '4' | '7' | '8' -> true
     | _ -> false
 
-let getNotes input =
-    input
-    |> Seq.map (
-        Seq.last
-        >> split ' '
-        >> Seq.map (fun s -> s.Trim())
-    )
+let getNotes line =
+    line
+    |> Seq.last
+    |> split ' '
+    |> Seq.map (fun s -> s.Trim())
 
 let getRawData line =
     line
-    |> Seq.map (
-        Seq.head
-        >> split ' '
-        >> Seq.map (fun s -> s.Trim())
-    )
+    |> Seq.head
+    |> split ' '
+    |> Seq.map (fun s -> s.Trim())
 
-let getInput fn = readInput fn |> Seq.map (splitS " \| ")
+let getInput fn =
+    readInput fn
+    |> Seq.map (splitS " \| " >> Seq.ofArray)
 
-let day8 fn () =
-    let input = getInput fn
-    let notes = getNotes input |> Seq.concat
-    printfn "%A" (notes |> List.ofSeq)
 
-    let onesFoursSevensAndEights =
-        notes |> Seq.filter isOneFourSevenOrEight
-
-    printfn "%A" onesFoursSevensAndEights
-    onesFoursSevensAndEights |> Seq.length |> int64
 
 let getDigits notes =
     let candidates = notes |> Seq.map Set.ofSeq |> Set.ofSeq
@@ -117,11 +103,31 @@ let getDigits notes =
       eight
       nine ]
 
+let solve line =
+    let data = getRawData line
+    let notes = getNotes line
+
+    let digits =
+        getDigits data
+        |> Seq.mapi (fun i d -> d, i)
+        |> Map.ofSeq
+
+    notes
+    |> Seq.map Set.ofSeq
+    |> Seq.map (fun d -> Map.find d digits |> string)
+    |> String.concat ""
+    |> int64
+
 let day8part2 fn () =
     let input = getInput fn
-    Seq.map input (fun line ->
-        let data = getRawData line
-        let digits = data |> Seq.iteri (fun (i, d) -> d, i) |> Map.ofSeq
-        let numbers = getNotes line |> Seq.map Set.ofSeq
-    )
-    0
+    input |> Seq.map solve |> Seq.sum
+
+let day8 fn () =
+    let input = getInput fn
+
+    input
+    |> Seq.map (solve >> string)
+    |> String.concat ""
+    |> Seq.filter isOneFourSevenOrEight
+    |> Seq.length
+    |> int64
