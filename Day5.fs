@@ -15,8 +15,7 @@ let filterInvalidVectors vec =
     let (x1, y1), (x2, y2) = vecToTuple vec
     x1 = x2 || y1 = y2
 
-let filterInvalidVectors2 _ =
-    true
+let filterInvalidVectors2 _ = true
 
 let intToChar =
     function

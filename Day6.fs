@@ -2,7 +2,7 @@ module AoC2021.Day6
 
 open AoC2021.Utils
 
-let generation (age:int, count:int64) =
+let generation (age: int, count: int64) =
     match age with
     | 0 -> seq [ (6, count); (8, count) ]
     | n -> seq [ (n - 1, count) ]
@@ -23,13 +23,12 @@ let day6 fn n () =
         |> split ','
         |> Seq.map int
         |> Seq.countBy id
-        |> Seq.map (fun (a,c) -> (a, int64 c))
+        |> Seq.map (fun (a, c) -> (a, int64 c))
 
     let runGeneration _ =
         // printfn "%A" fish
         fish <- Seq.collect generation fish |> merge
 
-    [ 0 .. (n - 1) ]
-    |> Seq.iter runGeneration
+    [ 0 .. (n - 1) ] |> Seq.iter runGeneration
 
     Seq.sumBy snd fish

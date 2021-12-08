@@ -47,6 +47,6 @@ let solve boardMatcher fn =
 
 let day4 fn () =
     solve (List.tryFind (List.exists List.isEmpty)) fn
-    
+
 let day4part2 fn () =
     solve ((List.filter List.isEmpty) >> List.tryExactlyOne) fn

@@ -20,7 +20,10 @@ let day7 fn () =
 let fuelConsumption n = [ 1L .. n ] |> List.sum
 
 let getFuelConsumption depths depth =
-    let consumption = depths |> Array.map (fun d -> int64 (abs (d - depth))) |> Array.sumBy fuelConsumption
+    let consumption =
+        depths
+        |> Array.map (fun d -> int64 (abs (d - depth)))
+        |> Array.sumBy fuelConsumption
     // printfn "%d: %d" depth consumption
     depth, consumption
 

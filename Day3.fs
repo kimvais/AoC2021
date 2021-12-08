@@ -78,7 +78,11 @@ let rec countAndMatchBits preferred (input: seq<string>, index) =
 
 let day3part2 fn () =
     let input = readInput fn
-    let o2 = countAndMatchBits 1 (input, 0) |> asNumber
-    let co2 = countAndMatchBits 0 (input, 0) |> asNumber
+
+    let o2 =
+        countAndMatchBits 1 (input, 0) |> asNumber
+
+    let co2 =
+        countAndMatchBits 0 (input, 0) |> asNumber
 
     o2 * co2 |> int64
