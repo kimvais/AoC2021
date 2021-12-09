@@ -53,3 +53,33 @@ let day9 fn () =
     getAllPits heightMap
     |> Seq.map (fun (x, y) -> heightMap.[x].[y] + 1L)
     |> Seq.sum
+
+let rec getBasin map basin (x, y) =
+    let basin' = Set.add (x, y) basin
+
+    let neighbours =
+        getNeighbours map x y
+        |> Seq.filter
+            (fun (x, y) ->
+                map.[x].[y] < 9L
+                && not (Set.contains (x, y) basin'))
+
+    match Seq.isEmpty neighbours with
+    | true -> basin'
+    | false ->
+        neighbours
+        |> Seq.map (getBasin map basin')
+        |> Set.unionMany
+
+
+let day9part2 fn () =
+    let heightMap = getMap fn
+    let pits = getAllPits heightMap
+
+    pits
+    |> Seq.map (getBasin heightMap Set.empty<int * int>)
+    |> Seq.map Set.count
+    |> Seq.sortBy (~-)
+    |> Seq.take 3
+    |> Seq.map int64
+    |> Seq.reduce (*)

@@ -72,3 +72,4 @@ let ``day8 ``() =
 let ``day9`` () =
     day9 "test9" () |> should equal 15L
     day9 "9" () |> should equal 977L
+    day9part2 "test9" () |> should equal 1134L
