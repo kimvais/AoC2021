@@ -35,3 +35,6 @@ let readInputDelimByEmptyLine inputfile =
     readInput inputfile
     |> String.concat "\n"
     |> splitByTwoLinefeeds
+
+let charToL (c:char) =
+    int64 c - int64 '0'
