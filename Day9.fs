@@ -55,20 +55,26 @@ let day9 fn () =
     |> Seq.sum
 
 let rec getBasin map basin (x, y) =
+
     let basin' = Set.add (x, y) basin
 
     let neighbours =
         getNeighbours map x y
         |> Seq.filter
-            (fun (x, y) ->
-                map.[x].[y] < 9L
-                && not (Set.contains (x, y) basin'))
+            (fun (x', y') ->
+                map.[x'].[y'] < 9L
+                && map.[x].[y] < map.[x'].[y']
+                && not (Set.contains (x', y') basin'))
+        |> Set.ofSeq
 
-    match Seq.isEmpty neighbours with
+    let basin'' = Set.union basin' neighbours
+
+    match Set.isEmpty neighbours with
     | true -> basin'
     | false ->
+        // printfn "(%d, %d): %d" x y (Set.count basin'')
         neighbours
-        |> Seq.map (getBasin map basin')
+        |> Seq.map (getBasin map basin'')
         |> Set.unionMany
 
 
@@ -76,10 +82,15 @@ let day9part2 fn () =
     let heightMap = getMap fn
     let pits = getAllPits heightMap
 
-    pits
-    |> Seq.map (getBasin heightMap Set.empty<int * int>)
-    |> Seq.map Set.count
-    |> Seq.sortBy (~-)
+    let basins =
+        pits
+        |> Seq.map (getBasin heightMap Set.empty<int * int>)
+        |> Seq.map Set.count
+        |> Seq.sortBy (~-)
+
+    printfn "%A" basins
+
+    basins
     |> Seq.take 3
     |> Seq.map int64
     |> Seq.reduce (*)
