@@ -49,16 +49,24 @@ let day4 fn () =
 
     sumOfNumbers * lastNumber |> int64
 
-let rec part2 remaining numbers =
+let rec part2 boards numbers =
+    let _, _, remaining, numbers' = doBingo boards numbers
     match Seq.length remaining with
-    | 1 -> doBingo remaining numbers
+    | 1 ->
+        let winningBoard, lastnumber, _, _  = doBingo remaining numbers'
+        winningBoard, lastnumber
     | _ ->
-        let _, _, remaining', numbers' = doBingo remaining numbers
-        part2 remaining' numbers'
+        part2 remaining numbers'
 
 let day4part2 fn () =
     let input = readInputDelimByEmptyLine fn
     let size, boards, numbers = parseInput input
-    let _, _, lastBoard, numbers = part2 boards numbers
-
-    0L
+    let lastBoard, lastNumber = part2  boards numbers
+    printfn "%A, %A" lastBoard lastNumber
+    
+    let sumOfNumbers =
+        (lastBoard
+         |> List.take size
+         |> List.sumBy List.sum)
+        
+    sumOfNumbers * lastNumber |> int64
