@@ -14,35 +14,51 @@ open AoC2021.Day8
 open AoC2021.Day9
 
 [<Fact>]
-let ``day 1`` () =
+let ``day 1, part 1`` () =
     day1 "test1" () |> should equal 7L
     day1part2 "test1" () |> should equal 5L
+
+[<Fact>]
+let ``day 1, part 2`` () =
     day1 "1" () |> should equal 1266L
     day1part2 "1" () |> should equal 1217L
 
 [<Fact>]
-let ``day2 `` () =
+let ``day 2, part 1`` () =
     day2 "test2" () |> should equal 150L
     day2 "2" () |> should equal 1804520L
+
+[<Fact>]
+let ``day2, part 2`` () =
     day2part2 "test2" () |> should equal 900L
     day2part2 "2" () |> should equal 1971095320L
 
 [<Fact>]
-let ``day3 `` () =
+let ``day 3, part 1`` () =
     day3 "test3" () |> should equal 198L
     day3 "3" () |> should equal 4160394L
-    day3part2 "test3" () |> should equal 230L
 
 [<Fact>]
-let ``day 4`` () =
+let ``day3, part 2`` () =
+    day3part2 "test3" () |> should equal 230L
+    day3part2 "3" () |> should equal 4125600L
+
+[<Fact>]
+let ``day 4, part 1`` () =
     day4 "test4" () |> should equal 4512L
     day4 "4" () |> should equal 54275L
+
+[<Fact>]
+let ``day 4, part 2`` () =
     day4part2 "test4" () |> should equal 1924L
 
 [<Fact>]
-let ``day 5`` () =
+let ``day 5, part 1`` () =
     day5 "test5" () |> should equal 5L
     day5 "5" () |> should equal 6666L
+
+[<Fact>]
+let ``day 5, part 2`` () =
     day5part2 "test5" () |> should equal 12L
     day5part2 "5" () |> should equal 19081L
 
@@ -56,21 +72,31 @@ let ``day 6`` () =
     day6 "6" 256 () |> should equal 1569108373832L
 
 [<Fact>]
-let ``day 7`` () =
+let ``day 7, part 1`` () =
     day7 "test7" () |> should equal 37L
     day7 "7" () |> should equal 344138L
-    day7part2 "test7" () |> should equal 168L
-    
+
 [<Fact>]
-let ``day8 ``() =
+let ``day 7, part 2`` () =
+    day7part2 "test7" () |> should equal 168L
+    day7part2 "7" () |> should equal 94862124L
+
+[<Fact>]
+let ``day 8, part 1`` () =
     day8 "test8" () |> should equal 26L
     day8 "8" () |> should equal 274L
+
+[<Fact>]
+let ``day8, part 2`` () =
     day8part2 "test8" () |> should equal 61229L
     day8part2 "8" () |> should equal 1012089L
 
 [<Fact>]
-let ``day9`` () =
+let ``day 9, part 1`` () =
     day9 "test9" () |> should equal 15L
     day9 "9" () |> should equal 577L
+
+[<Fact>]
+let ``day9, part 2`` () =
     day9part2 "test9" () |> should equal 1134L
     day9part2 "9" () |> should equal 1069200L
