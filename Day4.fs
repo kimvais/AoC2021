@@ -10,7 +10,7 @@ let rec doBingo boards numbers =
         |> List.map (List.map (List.filter ((<>) number)))
 
     match List.tryFind (List.exists List.isEmpty) boards' with
-    | Some l -> l, number, (boards' |> List.filter (List.exists List.isEmpty)), Seq.tail numbers
+    | Some l -> l, number, (boards' |> List.filter ((List.exists List.isEmpty) >> not)), Seq.tail numbers
     | None -> doBingo boards' (Seq.tail numbers)
 
 let parseInput input =
@@ -35,19 +35,17 @@ let parseInput input =
     let boards' =
         boards |> List.map (fun l -> l @ List.transpose l)
 
-    boards', numbers
-
-let solve fn =
-    let input = readInputDelimByEmptyLine fn
-    let boards, numbers = parseInput input
-    doBingo boards numbers
-
+    List.length (List.head boards), boards', numbers
 
 let day4 fn () =
-    let winningBoard, lastNumber, _, _ = solve fn
+    let input = readInputDelimByEmptyLine fn
+    let size, boards, numbers = parseInput input
+    let winningBoard, lastNumber, _, _ = doBingo boards numbers
 
     let sumOfNumbers =
-        (winningBoard |> List.sumBy List.sum) / 2 // Every number is there twice, because of transpose earlier
+        (winningBoard
+         |> List.take size
+         |> List.sumBy List.sum)
 
     sumOfNumbers * lastNumber |> int64
 
@@ -60,11 +58,7 @@ let rec part2 remaining numbers =
 
 let day4part2 fn () =
     let input = readInputDelimByEmptyLine fn
-    let boards, numbers = parseInput input
+    let size, boards, numbers = parseInput input
     let _, _, lastBoard, numbers = part2 boards numbers
-    let winningBoard, lastNumber,_ ,_  = doBingo lastBoard numbers
 
-    let sumOfNumbers =
-        (winningBoard |> List.sumBy List.sum) / 2 // Every number is there twice, because of transpose earlier
-
-    sumOfNumbers * lastNumber |> int64
+    0L
