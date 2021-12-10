@@ -108,6 +108,7 @@
         <Content Include="input\test8.txt" />
         <Content Include="input\test9.txt" />
         <Content Include="input\9.txt" />
+        <Content Include="input\test10.txt" />
     </ItemGroup>
     <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
