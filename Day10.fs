@@ -9,7 +9,7 @@ let matchClosing =
     | '[' -> ']'
     | '{' -> '}'
 
-let score c =
+let score =
     function
     | ')' -> 3L
     | ']' -> 57L
@@ -25,10 +25,10 @@ let rec check stack chars =
     | [] -> None
     | head :: tail ->
         match c with
-        | None -> check [head] tail
+        | None -> check [ head ] tail
         | Some c ->
-            match Set.contains c opening with
-            | true -> check ([ c ] @ stack) tail
+            match Set.contains head opening with
+            | true -> check ([ head ] @ stack) tail
             | false ->
                 match matchClosing c = head with
                 | false -> Some head
@@ -36,11 +36,13 @@ let rec check stack chars =
 
 let day10 fn () =
     let input = readInput fn |> Seq.map List.ofSeq
-    // input |> Seq.choose (check [])|> printfn "%A"
-    input |> Seq.skip 2 |> Seq.head  |> check [] |> printfn "%A"
 
-    0L
+    input
+    |> Seq.choose (check [])
+    |> Seq.sumBy score
+
 
 let day10part2 fn () =
     let input = readInput fn |> Seq.map List.ofSeq
+    input |> Seq.filter (check [] >> function |Some _ -> false | None -> true) |> printfn "%A"
     0L
