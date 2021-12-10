@@ -110,5 +110,5 @@ let ``day10, part 1`` () =
 
 [<Fact>]
 let ``day10, part 2`` () =
-    day10part2 "test10" () |> should equal 0L
+    day10part2 "test10" () |> should equal 288957L
     day10part2 "10" () |> should equal 0L

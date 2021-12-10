@@ -20,9 +20,9 @@ let score2 =
     function
     | ')' -> 1L
     | ']' -> 2L
-    | '}' -> 3L 
-    | '>' -> 4L 
-    
+    | '}' -> 3L
+    | '>' -> 4L
+
 let opening = "({[<" |> Set.ofSeq
 
 let rec check stack chars =
@@ -40,7 +40,7 @@ let rec check stack chars =
                 match matchClosing c = head with
                 | false -> Some head
                 | true -> check (List.tail stack) tail
-                
+
 let rec check2 stack chars =
     let c = List.tryHead stack
 
@@ -61,14 +61,25 @@ let rec check2 stack chars =
 let day10 fn () =
     let input = readInput fn |> Seq.map List.ofSeq
 
-    input
-    |> Seq.choose (check [])
-    |> Seq.sumBy score
+    input |> Seq.choose (check []) |> Seq.sumBy score
 
 let folder tally n = tally * 5L + n
 
 let day10part2 fn () =
     let input = readInput fn |> Seq.map List.ofSeq
-    input |> Seq.filter (check [] >> function |Some _ -> false | None -> true) |> Seq.choose (check2 []) |> Seq.map (Seq.map (matchClosing >> score2) )
-    |> printfn "%A"
-    0L
+
+    let scores =
+        input
+        |> Seq.filter (
+            check []
+            >> function
+                | Some _ -> false
+                | None -> true
+        )
+        |> Seq.choose (check2 [])
+        |> Seq.map (Seq.map (matchClosing >> score2))
+        |> Seq.map (Seq.fold folder 0L)
+        |> Seq.sort
+
+    let l = Seq.length scores
+    scores |> Seq.skip (l / 2) |> Seq.head
