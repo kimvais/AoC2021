@@ -12,6 +12,7 @@ open AoC2021.Day6
 open AoC2021.Day7
 open AoC2021.Day8
 open AoC2021.Day9
+open AoC2021.Day10
 
 [<Fact>]
 let ``day 1, part 1`` () =
@@ -101,3 +102,13 @@ let ``day 9, part 1`` () =
 let ``day9, part 2`` () =
     day9part2 "test9" () |> should equal 1134L
     day9part2 "9" () |> should equal 1069200L
+
+[<Fact>]
+let ``day10, part 1`` () =
+    day10 "test10" () |> should equal 0L
+    day10 "10" () |> should equal 0L
+
+[<Fact>]
+let ``day10, part 2`` () =
+    day10part2 "test10" () |> should equal 0L
+    day10part2 "10" () |> should equal 0L
