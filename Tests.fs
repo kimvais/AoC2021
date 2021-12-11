@@ -115,7 +115,11 @@ let ``day 10, part 2`` () =
     day10part2 "10" () |> should equal 0L
 
 [<Fact>]
-let ``day11`` () =
+let ``day 11, part 1`` () =
     day11 "test11" 10 () |> should equal 204L
     day11 "test11" 100 () |> should equal 1656L
     day11 "11" 100 () |> should equal 1620L
+    
+[<Fact>]
+let ``day 11, part 2`` () =
+    day11part2 "test11" () |> should equal 195L

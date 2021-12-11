@@ -47,55 +47,68 @@ let printOctopi (octopi: Octopus [] []) =
     octopi |> Array.iter (fun row -> printRow row)
     printfn ""
 
+let doRoundRow octopi x row =
+    row |> Array.iteri (fun y _ -> flash octopi x y)
+
+let resetOne (octopi: Octopus [] []) x y =
+    let octopus = octopi.[x].[y]
+    octopi.[x].[y] <- { octopus with Flashed = false }
+
+let resetRow octopi x row =
+    row
+    |> Array.iteri (fun y _ -> resetOne octopi x y)
+
+// printOctopi octopi
+
+let countFlashes octopi =
+    octopi
+    |> Array.map (
+        Array.map
+            (fun o ->
+                match o.Energy with
+                | 0 -> 1
+                | _ -> 0)
+        >> Array.sum
+    )
+    |> Array.sum
+
+let resetAll octopi = octopi |> Array.iteri (resetRow octopi)
+
+let loadInitialState fn =
+    readInput fn
+    |> Array.ofSeq
+    |> Array.map (
+        Array.ofSeq
+        >> Array.map (
+            charToInt
+            >> (fun e -> { Energy = e; Flashed = false })
+        )
+    )
+
+let doRound octopi _ =
+    octopi |> Array.iteri (doRoundRow octopi)
+    let flashes = octopi |> countFlashes
+    octopi |> resetAll
+    flashes
+
 let day11 fn rounds () =
-    let octopi =
-        readInput fn
-        |> Array.ofSeq
-        |> Array.map (
-            Array.ofSeq
-            >> Array.map (
-                charToInt
-                >> (fun e -> { Energy = e; Flashed = false })
-            )
-        )
-
-    let doRoundRow x row =
-        row |> Array.iteri (fun y _ -> flash octopi x y)
-
-    let resetOne (octopi: Octopus [] []) x y =
-        let octopus = octopi.[x].[y]
-        octopi.[x].[y] <- { octopus with Flashed = false }
-
-    let resetRow x row =
-        row
-        |> Array.iteri (fun y _ -> resetOne octopi x y)
-
-    // printOctopi octopi
-
-    let countFlashes octopi =
-        octopi
-        |> Array.map (
-            Array.map
-                (fun o ->
-                    match o.Energy with
-                    | 0 -> 1
-                    | _ -> 0)
-            >> Array.sum
-        )
-        |> Array.sum
-
-    let resetAll octopi = octopi |> Array.iteri resetRow
+    let octopi = loadInitialState fn
 
     let flashes =
         [ 0 .. (rounds - 1) ]
-        |> Seq.map
-            (fun _ ->
-                octopi |> Array.iteri doRoundRow
-                let flashes = octopi |> countFlashes
-                octopi |> resetAll
-                flashes)
+        |> Seq.map (doRound octopi)
         |> Seq.sum
         |> int64
 
     // printOctopi octopi
     flashes
+
+let day11part2 fn () =
+    let octopi = loadInitialState fn
+
+    Seq.initInfinite id
+    |> Seq.mapi (fun i _ -> i, (doRound octopi i))
+    |> Seq.find (fun (_, n) -> n = 100)
+    |> fst
+    |> (+) 1
+    |> int64
