@@ -16,7 +16,9 @@ let getNeighBours x y =
     |> Seq.filter (fun (x, y) -> x >= 0 && y >= 0 && x < 10 && y < 10)
 
 let rec flash (octopi: Octopus [] []) x y =
-    let octopus = {octopi.[x].[y] with Energy=octopi.[x].[y].Energy + 1}
+    let octopus =
+        { octopi.[x].[y] with
+              Energy = octopi.[x].[y].Energy + 1 }
 
     match octopus.Flashed with
     | true -> ()
@@ -24,6 +26,7 @@ let rec flash (octopi: Octopus [] []) x y =
         match octopus.Energy with
         | 10 ->
             octopi.[x].[y] <- { Energy = 0; Flashed = true }
+
             getNeighBours x y
             |> Seq.iter (fun (x, y) -> flash octopi x y)
 
@@ -44,7 +47,7 @@ let printOctopi (octopi: Octopus [] []) =
     octopi |> Array.iter (fun row -> printRow row)
     printfn ""
 
-let day11 fn () =
+let day11 fn rounds () =
     let octopi =
         readInput fn
         |> Array.ofSeq
@@ -56,17 +59,43 @@ let day11 fn () =
             )
         )
 
-    let doRound x row =
+    let doRoundRow x row =
         row |> Array.iteri (fun y _ -> flash octopi x y)
 
-    printOctopi octopi
+    let resetOne (octopi: Octopus [] []) x y =
+        let octopus = octopi.[x].[y]
+        octopi.[x].[y] <- { octopus with Flashed = false }
 
-    octopi |> Array.iteri doRound
+    let resetRow x row =
+        row
+        |> Array.iteri (fun y _ -> resetOne octopi x y)
 
-    printOctopi octopi
-    octopi |> Array.iteri doRound
-    printOctopi octopi
+    // printOctopi octopi
 
-    0L
+    let countFlashes octopi =
+        octopi
+        |> Array.map (
+            Array.map
+                (fun o ->
+                    match o.Energy with
+                    | 0 -> 1
+                    | _ -> 0)
+            >> Array.sum
+        )
+        |> Array.sum
 
-let day11part2 fn () = 0L
+    let resetAll octopi = octopi |> Array.iteri resetRow
+
+    let flashes =
+        [ 0 .. (rounds - 1) ]
+        |> Seq.map
+            (fun _ ->
+                octopi |> Array.iteri doRoundRow
+                let flashes = octopi |> countFlashes
+                octopi |> resetAll
+                flashes)
+        |> Seq.sum
+        |> int64
+
+    // printOctopi octopi
+    flashes
