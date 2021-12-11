@@ -107,8 +107,7 @@ let day11part2 fn () =
     let octopi = loadInitialState fn
 
     Seq.initInfinite id
-    |> Seq.mapi (fun i _ -> i, (doRound octopi i))
-    |> Seq.find (fun (_, n) -> n = 100)
-    |> fst
+    |> Seq.map (fun _ -> doRound octopi 0)
+    |> Seq.findIndex (fun n -> n = 100)
     |> (+) 1
     |> int64
