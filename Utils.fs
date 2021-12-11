@@ -38,3 +38,5 @@ let readInputDelimByEmptyLine inputfile =
 
 let charToL (c:char) =
     int64 c - int64 '0'
+    
+let charToInt = charToL >> int
