@@ -131,3 +131,10 @@ let ``day 12, part 1`` () =
     day12 "test12a" () |> should equal 10L
     day12 "test12b" () |> should equal 19L
     day12 "test12c" () |> should equal 226L
+    
+[<Fact>]
+let ``day12, part 2`` () =
+    day12part2 "test12a" () |> should equal 36L
+    day12part2 "test12b" () |> should equal 103L
+    day12part2 "test12c" () |> should equal 3509L
+    

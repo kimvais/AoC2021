@@ -10,11 +10,13 @@ let isValid visited cave =
     || not (Seq.exists ((=) cave) visited)
 
 let isValid2 visited cave =
-    isUpper cave
-    || visited
-       |> Seq.countBy id
-       |> Seq.exists (fun (cave, count) -> not (isUpper cave) && count = 2)
-       |> not
+    cave <> "start"
+    && (isUpper cave
+        || not (Seq.exists ((=) cave) visited)
+        || visited
+           |> Seq.countBy id
+           |> Seq.exists (fun (cave, count) -> not (isUpper cave) && count = 2)
+           |> not)
 
 let rec traverse checkValidity (edges: Map<string, Set<string>>) (visited: string list) =
     let currentCave = List.last visited
@@ -65,7 +67,7 @@ let getEdges fn =
 
 let day12 fn () =
     let edges = getEdges fn
-    // edges |> printfn "%A"
+
     traverse isValid edges [ "start" ]
     |> Seq.length
     |> int64
