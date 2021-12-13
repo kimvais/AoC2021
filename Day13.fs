@@ -5,8 +5,8 @@ open AoC2021.Utils
 
 let boolToSymbol =
     function
-    | false -> "."
-    | true -> "#"
+    | false -> " "
+    | true -> "\u2588"
 
 let printPaper (paper: bool [] []) =
     paper
@@ -44,10 +44,15 @@ let parse fn =
             >> fun [| a; b |] -> (a, int b)
         )
 
-    let maxCoords = folds |> Array.groupBy fst |> Seq.map (fun (d, coords) -> d, coords |> Seq.map snd |> Seq.max) |> Map.ofSeq 
+    let maxCoords =
+        folds
+        |> Array.groupBy fst
+        |> Seq.map (fun (d, coords) -> d, coords |> Seq.map snd |> Seq.max)
+        |> Map.ofSeq
+
     let sizeX = maxCoords.["x"] * 2 + 1
     let sizeY = maxCoords.["y"] * 2 + 1
-    printfn "%d %d" sizeX sizeY
+    // printfn "%d %d" sizeX sizeY
     let paper =
         Array.init sizeY (fun _ -> (Array.create sizeX false))
 
@@ -64,7 +69,7 @@ let joinHalves first second =
                 Array.zip a b
                 |> Array.map (fun (c, d) -> (c || d)))
 
-    printPaper paper
+    // printPaper paper
     paper
 
 let foldY y paper =
@@ -92,7 +97,13 @@ let folder paper instruction = pickFold instruction paper
 let day13 fn () =
     let paper, folds = parse fn
 
-    paper
-    |> pickFold (Array.head folds)
+    folds
+    |> Array.take 1
+    |> Array.fold folder paper
     |> Array.concat
     |> Array.sumBy Convert.ToInt64
+
+let day13part2 fn () =
+    let paper, folds = parse fn
+    folds |> Array.fold folder paper |> printPaper
+    0L
