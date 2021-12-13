@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Utils.fs" />
+        <Compile Include="Day1.fs" />
+        <Compile Include="Day2.fs" />
+        <Compile Include="Day3.fs" />
+        <Compile Include="Day4.fs" />
+        <Compile Include="Day5.fs" />
+        <Compile Include="Day6.fs" />
+        <Compile Include="Day7.fs" />
+        <Compile Include="Day8.fs" />
+        <Compile Include="Day9.fs" />
+        <Compile Include="Day10.fs" />
+        <Compile Include="Day11.fs" />
+        <Compile Include="Day12.fs" />
+        <Compile Include="Day13.fs" />
+        <Compile Include="Tests.fs" />
+        <Compile Include="Program.fs" />
+        <Folder Include="input" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FsUnit.xUnit" Version="4.1.0" />
+    </ItemGroup>
+
+</Project>
