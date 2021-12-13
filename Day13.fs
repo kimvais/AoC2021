@@ -44,9 +44,9 @@ let parse fn =
             >> fun [| a; b |] -> (a, int b)
         )
 
-    folds |> Array.groupBy fst |> printfn "%A"
-    let sizeX = dots |> Seq.map fst |> Seq.max |> (+) 1
-    let sizeY = dots |> Seq.map snd |> Seq.max |> (+) 1
+    let maxCoords = folds |> Array.groupBy fst |> Seq.map (fun (d, coords) -> d, coords |> Seq.map snd |> Seq.max) |> Map.ofSeq 
+    let sizeX = maxCoords.["x"] * 2 + 1
+    let sizeY = maxCoords.["y"] * 2 + 1
     printfn "%d %d" sizeX sizeY
     let paper =
         Array.init sizeY (fun _ -> (Array.create sizeX false))
