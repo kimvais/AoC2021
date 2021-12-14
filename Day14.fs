@@ -3,11 +3,6 @@ module AoC2021.Day14
 open AoC2021.Utils
 open System
 
-let insertOne rules' ((a, b), c) =
-    match rules' |> Map.tryFind (a, b) with
-    | Some [ pair1; pair2 ] -> seq [ (pair1, c); (pair2, c) ]
-    | None -> failwith "invalid rule"
-
 let parseInput fn =
     let [ template; rules ] =
         readInput fn
@@ -29,6 +24,11 @@ let parseInput fn =
     template', rules' |> Map.ofArray
 
 let mergeCounts (letter, counts) = letter, counts |> Seq.sumBy snd
+
+let insertOne rules ((a, b), c) =
+    rules
+    |> Map.find (a, b)
+    |> (fun [ pair1; pair2 ] -> seq [ (pair1, c); (pair2, c) ])
 
 let insert rules counts =
     counts
@@ -54,8 +54,6 @@ let day14 fn rounds () =
         |> Seq.groupBy fst
         |> Seq.map mergeCounts
 
-    printfn "%A" counts
-
     let frequencies =
         polymerize rules rounds (counts |> Map.ofSeq)
         |> Map.toList
@@ -71,8 +69,6 @@ let day14 fn rounds () =
         |> Seq.map (fun (a, c) -> snd a, c)
         |> Seq.groupBy fst
         |> Seq.map mergeCounts
-
-
 
     let letterCounts =
         Seq.zip firsts seconds
