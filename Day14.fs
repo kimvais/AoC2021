@@ -3,15 +3,10 @@ module AoC2021.Day14
 open AoC2021.Utils
 open System
 
-let addToEnd i s =
-    Seq.append s (Seq.singleton i)
-    
-let insertOne rules' (a, b) =
-    let key = $"%c{a}%c{b}"
-
-    match rules' |> Map.tryFind key with
-    | Some c -> $"%c{a}%s{c}"
-    | None -> $"%c{a}"
+let insertOne rules' ((a, b), c) =
+    match rules' |> Map.tryFind (a, b) with
+    | Some [ pair1; pair2 ] -> seq [ (pair1, c); (pair2, c) ]
+    | None -> failwith "invalid rule"
 
 let parseInput fn =
     let [ template; rules ] =
@@ -25,25 +20,64 @@ let parseInput fn =
 
     let rules' =
         rules
-        |> Array.map ((splitS " -> ") >> fun [| a; b |] -> (a, b))
-        |> Map.ofArray
-    template', rules'
-    
-let insert rules t =
-    t
-    |> Seq.pairwise
+        |> Array.map (
+            splitS " -> "
+            >> Array.map Array.ofSeq
+            >> (fun [| [| a; b |]; [| c |] |] -> (a, b), [ (a, c); (c, b) ])
+        )
+
+    template', rules' |> Map.ofArray
+
+let mergeCounts (letter, counts) = letter, counts |> Seq.sumBy snd
+
+let insert rules counts =
+    counts
+    |> Map.toSeq
     |> Seq.map (insertOne rules)
     |> Seq.concat
-    |> addToEnd (Seq.last t)
-    |> String.Concat
+    |> Seq.groupBy fst
+    |> Seq.map mergeCounts
+    |> Map.ofSeq
 
-let rec polymerize rules rounds template =
+let rec polymerize rules rounds counts =
     match rounds with
-    | 0 -> template
-    | n -> insert rules template |> polymerize rules (n-1)
-    
-let day14 fn rounds () =
-    let template, rules = parseInput fn 
+    | 0 -> counts
+    | n -> insert rules counts |> polymerize rules (n - 1)
 
-    let counts = polymerize rules rounds template |> Seq.countBy id |> Seq.map snd
-    Seq.max counts - Seq.min counts |> int64
+let day14 fn rounds () =
+    let template, rules = parseInput fn
+
+    let counts =
+        template
+        |> Seq.pairwise
+        |> Seq.map (fun (a, b) -> (a, b), 1L)
+        |> Seq.groupBy fst
+        |> Seq.map mergeCounts
+
+    printfn "%A" counts
+
+    let frequencies =
+        polymerize rules rounds (counts |> Map.ofSeq)
+        |> Map.toList
+
+    let firsts =
+        frequencies
+        |> Seq.map (fun (a, c) -> fst a, c)
+        |> Seq.groupBy fst
+        |> Seq.map mergeCounts
+
+    let seconds =
+        frequencies
+        |> Seq.map (fun (a, c) -> snd a, c)
+        |> Seq.groupBy fst
+        |> Seq.map mergeCounts
+
+
+
+    let letterCounts =
+        Seq.zip firsts seconds
+        |> Seq.map (fun ((l, f), (_, s)) -> l, Seq.max [ f; s ])
+
+    let mostCommon = letterCounts |> Seq.map snd |> Seq.max
+    let leastCommon = letterCounts |> Seq.map snd |> Seq.min
+    mostCommon - leastCommon

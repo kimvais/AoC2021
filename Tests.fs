@@ -147,9 +147,7 @@ let ``day 13, part 1`` () =
 
 [<Fact>]
 let ``day14, part 1`` () =
-    let t, rules = parseInput "test14"
-    let t' = t|> insert rules
-    t' |> should equal "NCNBCHB"
-    "NCNBCHB" |> insert rules |> should equal "NBCCNBBBCBHCB"
-    "NBCCNBBBCBHCB" |> insert rules |> should equal "NBBBCNCCNBBNBNBBCHBHHBCHB"
-    "NBBBCNCCNBBNBNBBCHBHHBCHB" |> insert rules |> should equal "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"
+    day14 "test14" 10 () |>should equal 1588L
+    day14 "14" 10 () |>should equal 3143L
+    day14 "test14" 40 () |> should equal 2188189693529L
+    day14 "14" 40 () |> should equal 4110215602456L
