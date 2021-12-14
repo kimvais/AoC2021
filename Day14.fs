@@ -37,10 +37,13 @@ let insert rules t =
     |> addToEnd (Seq.last t)
     |> String.Concat
 
-let day14 fn () =
+let rec polymerize rules rounds template =
+    match rounds with
+    | 0 -> template
+    | n -> insert rules template |> polymerize rules (n-1)
+    
+let day14 fn rounds () =
     let template, rules = parseInput fn 
 
-
-    template |> insert rules |> printfn "%s"
-
-    0L
+    let counts = polymerize rules rounds template |> Seq.countBy id |> Seq.map snd
+    Seq.max counts - Seq.min counts |> int64
