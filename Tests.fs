@@ -16,6 +16,7 @@ open AoC2021.Day10
 open AoC2021.Day11
 open AoC2021.Day12
 open AoC2021.Day13
+open AoC2021.Day14
 
 [<Fact>]
 let ``day 1, part 1`` () =
@@ -143,3 +144,12 @@ let ``day12, part 2`` () =
 let ``day 13, part 1`` () =
     day13 "test13" () |> should equal 17L
     day13 "13" () |> should equal 695L
+
+[<Fact>]
+let ``day14, part 1`` () =
+    let t, rules = parseInput "test14"
+    let t' = t|> insert rules
+    t' |> should equal "NCNBCHB"
+    "NCNBCHB" |> insert rules |> should equal "NBCCNBBBCBHCB"
+    "NBCCNBBBCBHCB" |> insert rules |> should equal "NBBBCNCCNBBNBNBBCHBHHBCHB"
+    "NBBBCNCCNBBNBNBBCHBHHBCHB" |> insert rules |> should equal "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"
