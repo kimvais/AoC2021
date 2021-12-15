@@ -7,7 +7,7 @@ type Node =
       Y: int
       Risk: uint64
       Distance: uint64
-      Visited: bool }
+      Previous: option<Node> }
 
 
 let createNode x y risk =
@@ -15,50 +15,23 @@ let createNode x y risk =
       Y = y
       Risk = risk
       Distance = System.UInt64.MaxValue
-      Visited = false }
+      Previous = None }
 
-let getAllNodes (grid: Node [] []) = grid |> Seq.concat
-
-let getNode (grid: (Node) [] []) (x, y) = grid.[x].[y]
-
-let calcDistanceAndUpdate grid distance (x, y) =
-    let cn = getNode grid (x, y)
-
-    let distance' =
-        List.min [ distance + cn.Risk
-                   cn.Distance ]
-    let cn' =
-        { cn with
-              Distance = distance' }
-
-    grid.[cn'.X].[cn'.Y] <- cn'
-    cn'
-
-let markNext grid n =
-    let maxX = Array.length grid
-    let maxY = Array.length (Array.head grid)
-
-    seq [ n.X + 1, n.Y; n.X, n.Y + 1 ]
-    |> Seq.filter (fun (x', y') -> x' < maxX && y' < maxY)
-    |> Seq.map (calcDistanceAndUpdate grid n.Distance)
-
-let getNextNode grid =
-    let nodes = getAllNodes grid
-
-    nodes
-    |> Seq.filter (fun n -> n.Visited)
-    |> Seq.map (markNext grid)
+let getAllNodes (grid: Node [] []) =
+    grid
     |> Seq.concat
-    |> Seq.filter (fun n -> not n.Visited)
-    |> Seq.minBy (fun n -> n.Distance)
+    |> Seq.map (fun n -> n.X, n.Y)
+    |> Set.ofSeq
+
+let getNode (grid: (Node) [] []) (x, y) () = grid.[x].[y]
 
 let printRow row =
     row
     |> Array.map
         (fun n ->
             match n.Distance with
-            | System.UInt64.MaxValue -> " ... "
-            | n -> n |> sprintf "%4d ")
+            | System.UInt64.MaxValue -> " .. "
+            | n -> n |> sprintf "%3d ")
     |> String.concat ""
     |> printfn "%s"
 
@@ -66,10 +39,47 @@ let printGrid grid =
     grid |> Array.iter printRow
     printfn ""
 
-let getUnvisited (grid: Node [] []) =
-    grid
-    |> getAllNodes
-    |> Seq.filter (fun n -> not n.Visited)
+let getNeighbourCoords x y =
+    seq [ x - 1, y
+          x, y - 1
+          x + 1, y
+          x, y + 1 ]
+
+let rec dijkstra (grid: Node [] []) queue =
+    match Set.isEmpty queue with
+    | true -> grid
+    | false ->
+        let curr =
+            queue
+            |> Seq.minBy (fun (x, y) -> grid.[x].[y].Distance)
+            |> getNode grid <| ()
+
+        let queue' = Set.remove (curr.X, curr.Y) queue
+
+        let neighbours =
+            getNeighbourCoords curr.X curr.Y
+            |> Seq.filter
+                (fun (nx, ny) ->
+                    nx >= 0
+                    && ny >= 0
+                    && nx < Array.length grid
+                    && ny < Array.length (Array.head grid)
+                    && (queue' |> Set.contains (nx, ny)))
+            |> Seq.map (fun (x', y') -> getNode grid (x',y') ())
+
+        neighbours
+        |> Seq.iter
+            (fun n ->
+                let newDistance = curr.Distance + n.Risk
+
+                if newDistance < n.Distance then
+
+                    grid.[n.X].[n.Y] <-
+                        { n with
+                              Distance = newDistance
+                              Previous = Some curr })
+
+        dijkstra grid queue'
 
 let day15 fn () =
     let parseRow x row =
@@ -84,31 +94,7 @@ let day15 fn () =
 
     grid.[0].[0] <-
         { grid.[0].[0] with
-              Distance = 0UL
-              Visited = true }
+              Risk = 0UL
+              Distance = 0UL }
 
-    let rec traverse (grid: Node [] []) =
-        match Seq.isEmpty (getUnvisited grid) with
-        | false ->
-            let node = getNextNode grid
-            let distance = node.Distance
-            printfn "%d,%d" node.X node.Y
-
-            let distance' =
-                List.min [ distance + node.Risk
-                           node.Distance ]
-
-            grid.[node.X].[node.Y] <-
-                { node with
-                      Distance = distance'
-                      Visited = true }
-
-            printGrid grid
-
-            traverse grid
-        | true -> grid
-
-
-    // unvisitedNodes |> printfn "%A"
-    traverse grid
-    0L
+    (dijkstra grid (getAllNodes grid) |> Array.last |> Array.last).Distance |> int64
