@@ -153,7 +153,10 @@ let ``day 14, part 1`` () =
     day14 "14" 10 () |>should equal 3143L
     day14 "test14" 40 () |> should equal 2188189693529L
     day14 "14" 40 () |> should equal 4110215602456L
-
+    
+[<Fact>]
+let ``day 16, part 1`` () =
+    ()
 [<Fact>]
 let ``day 16, part 2`` () =
     d16parse2 "C200B40A82" |> should equal 3L

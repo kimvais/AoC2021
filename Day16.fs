@@ -10,6 +10,7 @@ and Packet =
     { Version: int64
       Type: int64
       Length: int
+      STLen: int
       Data: Payload }
 
 let rec parseValue bits results =
@@ -20,10 +21,19 @@ let rec parseValue bits results =
     | 1 :: tail -> parseValue (bits |> Seq.skip 5) (results @ tail)
 
 let rec parse packets bits =
-    match (Seq.isEmpty bits) || (bits |> Seq.forall (fun n -> n = 0)) with
-    | true -> packets
-    | false -> 
-        // match thereIsMore bits with
+
+    let rec parseNpackets n (pkts: Packet list) bits =
+        match n with
+        | 1 -> pkts, bits
+        | n ->
+            let pkt, rest = parse [] bits
+            parseNpackets (n - 1) (pkt @ pkts) rest
+
+
+    match (Seq.isEmpty bits)
+          || (bits |> Seq.forall (fun n -> n = 0)) with
+    | true -> packets, bits
+    | false ->
         let version = bits |> Seq.take 3 |> bitsToInt
 
         let typ =
@@ -40,14 +50,17 @@ let rec parse packets bits =
 
                 { Version = version
                   Type = typ
+                  STLen = -1
                   Data = Value value'
-                  Length = skip }, bits |> Seq.skip skip
+                  Length = skip },
+                bits |> Seq.skip skip
             | _ ->
                 let lengthType = Seq.head payload
 
                 match lengthType with
                 | 0 ->
                     let skip = 16
+
                     let length =
                         Seq.tail payload
                         |> Seq.take 15
@@ -57,22 +70,25 @@ let rec parse packets bits =
                     let subPacketData =
                         payload |> Seq.skip skip |> Seq.take length
 
-                    let subPackets = parse [] subPacketData
+                    let subPackets, rest = parse [] subPacketData
 
                     { Data = SubPackets subPackets
                       Version = version
                       Type = typ
-                      Length = 6 + skip + length }, bits |> Seq.skip (6 + skip + length)
+                      STLen = 0
+                      Length = 6 + skip + length },
+                    bits |> Seq.skip (6 + skip + length)
                 | 1 ->
                     let skip = 12
+
                     let subPktCount =
                         Seq.tail payload
                         |> Seq.take 11
                         |> bitsToInt
                         |> int
-                    let subPackets =
-                        parse [] (payload |> Seq.skip skip)
-                        // parseNpackets (subPktCount,(payload |> Seq.skip 12),[])
+
+                    let subPackets, rest =
+                        parseNpackets subPktCount [] (payload |> Seq.skip skip)
 
                     let length =
                         6
@@ -82,34 +98,75 @@ let rec parse packets bits =
                     { Data = SubPackets subPackets
                       Version = version
                       Type = typ
-                      Length = length }, bits |> Seq.skip length
+                      STLen = 1
+                      Length = length },
+                    rest
 
-        parse (packets @ [newPacket]) rest
+        parse (packets @ [ newPacket ]) rest
 
-let rec countVersions (pkt:Packet) =
+let rec countVersions (pkt: Packet) =
     match pkt.Data with
-    | SubPackets s -> (s |> Seq.map countVersions |> Seq.sum) + pkt.Version
+    | SubPackets s ->
+        (s |> Seq.map countVersions |> Seq.sum)
+        + pkt.Version
     | Value _ -> pkt.Version
 
-let rec getValue (pkt:Packet)  =
+
+let rec getValue (pkt: Packet) =
+    let boolOp fn values =
+        let a = values |> Seq.head
+        let b = values |> Seq.last
+
+        match fn a b with
+        | true -> 1L
+        | false -> 0L
+
     match pkt.Type, pkt.Data with
     | 0L, SubPackets s -> s |> Seq.map getValue |> Seq.sum
-    | 1L, SubPackets s -> s|> Seq.map getValue |> Seq.reduce (*)
+    | 1L, SubPackets s -> s |> Seq.map getValue |> Seq.reduce (*)
     | 2L, SubPackets s -> s |> Seq.map getValue |> Seq.min
     | 3L, SubPackets s -> s |> Seq.map getValue |> Seq.max
     | 4L, Value n -> n
-    | 5L, SubPackets s -> match (s |> Seq.head |> getValue) > (s |> Seq.last |> getValue) with | true -> 1L | false -> 0L
-    | 6L, SubPackets s -> match (s |> Seq.head |> getValue) < (s |> Seq.last |> getValue) with | true -> 1L | false -> 0L
-    | 7L, SubPackets s -> match (s |> Seq.head |> getValue) = (s |> Seq.last |> getValue) with | true -> 1L | false -> 0L
+    | 5L, SubPackets s -> s |> Seq.map getValue |> boolOp (>)
+    | 6L, SubPackets s -> s |> Seq.map getValue |> boolOp (<)
+    | 7L, SubPackets s -> s |> Seq.map getValue |> boolOp (=)
     | _ -> failwith "Error"
-     
+
+let rec formatPacket pkt =
+    match pkt.Type, pkt.Data, pkt.STLen with
+    | 0L, SubPackets s, t -> sprintf "SUM%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 1L, SubPackets s, t -> sprintf "MUL%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 2L, SubPackets s, t -> sprintf "MIN%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 3L, SubPackets s, t -> sprintf "MAX%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 4L, Value n, -1 -> sprintf "%d" n
+    | 5L, SubPackets s, t -> sprintf "GT%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 6L, SubPackets s, t -> sprintf "LT%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 7L, SubPackets s, t -> sprintf "EQ%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+
+let day16parse1 data =
+    parse [] data |> fst |> Seq.head |> countVersions
+
 let day16 fn () =
-    let data = readInput fn  |> Seq.head |> hexToBits
-    parse [] data |> Seq.head |> countVersions 
+    let data = readInput fn |> Seq.head |> hexToBits
+    day16parse1 data
 
 let d16parse2 data =
-    data |> hexToBits |> parse [] |> Seq.head |> getValue
-    
+    data
+    |> hexToBits
+    |> parse []
+    |> fst
+    |> Seq.head
+    |> getValue
+
 let day16part2 fn () =
-    let data = readInput fn |> Seq.concat
-    d16parse2 data
+    let packet =
+        "9C0141080250320F1802104A08"
+        |> hexToBits
+        |> parse []
+        |> fst
+        |> Seq.head
+
+    packet |> formatPacket |> printfn "%s"
+    // let data = readInput fn |> Seq.concat
+    // d16parse2 data
+    0L
