@@ -42,7 +42,12 @@ let charToL (c:char) =
     
 let charToInt = charToL >> int
 
-let hexToBits value = Convert.ToString(Convert.ToInt32(value.ToString(), 16), 2) |> Seq.map charToInt
+let hexToBits value =
+    let raw = Convert.ToString(Convert.ToInt64(value.ToString(), 16), 2) |> Seq.map charToInt
+    match Seq.length raw % 8 with
+    | 6 -> Seq.append [0;0] raw
+    | 0 -> raw
+    | _ -> failwith "Invalid input"
 
 let bitsToInt bits =
     let s = bits |> Seq.map string |> String.concat ""
