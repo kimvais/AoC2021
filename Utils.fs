@@ -1,5 +1,6 @@
 module AoC2021.Utils
 
+open System
 open System.IO
 open System.Text.RegularExpressions
 
@@ -40,3 +41,9 @@ let charToL (c:char) =
     int64 c - int64 '0'
     
 let charToInt = charToL >> int
+
+let hexToBits value = Convert.ToString(Convert.ToInt32(value.ToString(), 16), 2) |> Seq.map charToInt
+
+let bitsToInt bits =
+    let s = bits |> Seq.map string |> String.concat ""
+    Convert.ToInt64(s, 2)

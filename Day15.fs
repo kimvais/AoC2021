@@ -52,7 +52,8 @@ let rec dijkstra (grid: Node [] []) queue =
         let curr =
             queue
             |> Seq.minBy (fun (x, y) -> grid.[x].[y].Distance)
-            |> getNode grid <| ()
+            |> getNode grid
+            <| ()
 
         let queue' = Set.remove (curr.X, curr.Y) queue
 
@@ -65,7 +66,7 @@ let rec dijkstra (grid: Node [] []) queue =
                     && nx < Array.length grid
                     && ny < Array.length (Array.head grid)
                     && (queue' |> Set.contains (nx, ny)))
-            |> Seq.map (fun (x', y') -> getNode grid (x',y') ())
+            |> Seq.map (fun (x', y') -> getNode grid (x', y') ())
 
         neighbours
         |> Seq.iter
@@ -81,7 +82,12 @@ let rec dijkstra (grid: Node [] []) queue =
 
         dijkstra grid queue'
 
-let day15 fn () =
+let recalculateRisk =
+    function
+    | n when n < 8UL -> n + 1UL
+    | _ -> 1UL
+
+let loadGrid fn =
     let parseRow x row =
         row
         |> Seq.mapi (fun y c -> c |> charToInt |> uint64 |> createNode x y)
@@ -92,9 +98,28 @@ let day15 fn () =
         |> Seq.mapi (fun x row -> row |> parseRow x)
         |> Array.ofSeq
 
+    grid
+
+let zeroStart (grid: Node [] []) =
     grid.[0].[0] <-
         { grid.[0].[0] with
               Risk = 0UL
               Distance = 0UL }
 
-    (dijkstra grid (getAllNodes grid) |> Array.last |> Array.last).Distance |> int64
+
+
+let day15 fn () =
+    let grid = loadGrid fn
+    zeroStart grid
+
+    dijkstra grid (getAllNodes grid)
+    |> Array.last
+    |> Array.last
+    |> fun n -> n.Distance
+    |> int64
+
+let multiplyBy n =
+    [0..5]
+let day15part2 fn () =
+    // let grid = loadGrid fn |> multiplyBy 5
+    0L
