@@ -3,6 +3,7 @@ module AoC2021.Tests
 open FsUnit.Xunit
 open Xunit
 
+open AoC2021.Utils
 open AoC2021.Day1
 open AoC2021.Day2
 open AoC2021.Day3
@@ -151,3 +152,4 @@ let ``day14, part 1`` () =
     day14 "14" 10 () |>should equal 3143L
     day14 "test14" 40 () |> should equal 2188189693529L
     day14 "14" 40 () |> should equal 4110215602456L
+

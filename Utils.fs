@@ -26,7 +26,7 @@ module Seq =
         >> Seq.map snd
 
 let split (c: char) (s: string) = s.Split c
-let splitS (sep: string) (s: string) = Regex.Split (s, sep)
+let splitS (sep: string) (s: string) = Regex.Split(s, sep)
 
 let splitByLinefeed (s: string) = s.Split '\n'
 
@@ -37,18 +37,28 @@ let readInputDelimByEmptyLine inputfile =
     |> String.concat "\n"
     |> splitByTwoLinefeeds
 
-let charToL (c:char) =
-    int64 c - int64 '0'
-    
+let charToL (c: char) = int64 c - int64 '0'
+
 let charToInt = charToL >> int
 
-let hexToBits value =
+let hexToBits (value: seq<char>) =
+    value
+    |> Seq.map
+        (fun n ->
+            $"%04d{Convert.ToString(Convert.ToInt16(n.ToString(), 16), 2)
+                   |> int}")
+    |> String.concat ""
+    |> Seq.map (fun c -> int c - int '0')
+
+let hexToBits2 value =
     let raw = Convert.ToString(Convert.ToInt64(value.ToString(), 16), 2) |> Seq.map charToInt
     match Seq.length raw % 8 with
     | 6 -> Seq.append [0;0] raw
     | 0 -> raw
     | _ -> failwith "Invalid input"
-
+    
 let bitsToInt bits =
-    let s = bits |> Seq.map string |> String.concat ""
+    let s =
+        bits |> Seq.map string |> String.concat ""
+
     Convert.ToInt64(s, 2)
