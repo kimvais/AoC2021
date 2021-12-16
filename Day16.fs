@@ -86,16 +86,30 @@ let rec parse packets bits =
 
         parse (packets @ [newPacket]) rest
 
+let rec countVersions (pkt:Packet) =
+    match pkt.Data with
+    | SubPackets s -> (s |> Seq.map countVersions |> Seq.sum) + pkt.Version
+    | Value _ -> pkt.Version
+
+let rec getValue (pkt:Packet)  =
+    match pkt.Type, pkt.Data with
+    | 0L, SubPackets s -> s |> Seq.map getValue |> Seq.sum
+    | 1L, SubPackets s -> s|> Seq.map getValue |> Seq.reduce (*)
+    | 2L, SubPackets s -> s |> Seq.map getValue |> Seq.min
+    | 3L, SubPackets s -> s |> Seq.map getValue |> Seq.max
+    | 4L, Value n -> n
+    | 5L, SubPackets s -> match (s |> Seq.head |> getValue) > (s |> Seq.last |> getValue) with | true -> 1L | false -> 0L
+    | 6L, SubPackets s -> match (s |> Seq.head |> getValue) < (s |> Seq.last |> getValue) with | true -> 1L | false -> 0L
+    | 7L, SubPackets s -> match (s |> Seq.head |> getValue) = (s |> Seq.last |> getValue) with | true -> 1L | false -> 0L
+    | _ -> failwith "Error"
+     
 let day16 fn () =
-    hexToBits "D2FE28" |> parse [] |> printfn "1: %A"
+    let data = readInput fn  |> Seq.head |> hexToBits
+    parse [] data |> Seq.head |> countVersions 
 
-    hexToBits "38006F45291200" |> parse [] |> printfn "2: %A"
-
-    hexToBits "EE00D40C823060" |> parse [] |> printfn "3: %A"
-
-    hexToBits "8A004A801A8002F478" |> parse [] |> printfn "4: %A"
-
-    hexToBits "620080001611562C8802118E34" |> parse [] |> printfn "5: %A"
-    hexToBits "C0015000016115A2E0802F182340" |> parse [] |> printfn "6: %A"
-    hexToBits "A0016C880162017C3686B18A3D4780" |> parse [] |> printfn "7: %A"
-    0L
+let d16parse2 data =
+    data |> hexToBits |> parse [] |> Seq.head |> getValue
+    
+let day16part2 fn () =
+    let data = readInput fn |> Seq.concat
+    d16parse2 data

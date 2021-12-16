@@ -18,6 +18,7 @@ open AoC2021.Day11
 open AoC2021.Day12
 open AoC2021.Day13
 open AoC2021.Day14
+open AoC2021.Day16
 
 [<Fact>]
 let ``day 1, part 1`` () =
@@ -136,7 +137,7 @@ let ``day 12, part 1`` () =
     day12 "test12c" () |> should equal 226L
     
 [<Fact>]
-let ``day12, part 2`` () =
+let ``day 12, part 2`` () =
     day12part2 "test12a" () |> should equal 36L
     day12part2 "test12b" () |> should equal 103L
     day12part2 "test12c" () |> should equal 3509L
@@ -147,9 +148,18 @@ let ``day 13, part 1`` () =
     day13 "13" () |> should equal 695L
 
 [<Fact>]
-let ``day14, part 1`` () =
+let ``day 14, part 1`` () =
     day14 "test14" 10 () |>should equal 1588L
     day14 "14" 10 () |>should equal 3143L
     day14 "test14" 40 () |> should equal 2188189693529L
     day14 "14" 40 () |> should equal 4110215602456L
 
+[<Fact>]
+let ``day 16, part 2`` () =
+    d16parse2 "C200B40A82" |> should equal 3L
+    d16parse2 "04005AC33890" |> should equal 54L
+    d16parse2 "880086C3E88112" |> should equal 7L
+    d16parse2 "CE00C43D881120" |> should equal 9L
+    d16parse2 "D8005AC2A8F0" |> should equal 1L
+    d16parse2 "F600BC2D8F" |> should equal 0L
+    d16parse2 "9C0141080250320F1802104A08" |> should equal 1L
