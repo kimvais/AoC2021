@@ -10,7 +10,6 @@ and Packet =
     { Version: int64
       Type: int64
       Length: int
-      STLen: int
       Data: Payload }
 
 let rec parseValue bits results =
@@ -50,7 +49,6 @@ let rec parse packets bits =
 
                 { Version = version
                   Type = typ
-                  STLen = -1
                   Data = Value value'
                   Length = skip },
                 bits |> Seq.skip skip
@@ -75,7 +73,6 @@ let rec parse packets bits =
                     { Data = SubPackets subPackets
                       Version = version
                       Type = typ
-                      STLen = 0
                       Length = 6 + skip + length },
                     bits |> Seq.skip (6 + skip + length)
                 | 1 ->
@@ -98,7 +95,6 @@ let rec parse packets bits =
                     { Data = SubPackets subPackets
                       Version = version
                       Type = typ
-                      STLen = 1
                       Length = length },
                     rest
 
@@ -133,15 +129,15 @@ let rec getValue (pkt: Packet) =
     | _ -> failwith "Error"
 
 let rec formatPacket pkt =
-    match pkt.Type, pkt.Data, pkt.STLen with
-    | 0L, SubPackets s, t -> sprintf "SUM%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
-    | 1L, SubPackets s, t -> sprintf "MUL%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
-    | 2L, SubPackets s, t -> sprintf "MIN%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
-    | 3L, SubPackets s, t -> sprintf "MAX%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
-    | 4L, Value n, -1 -> sprintf "%d" n
-    | 5L, SubPackets s, t -> sprintf "GT%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
-    | 6L, SubPackets s, t -> sprintf "LT%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
-    | 7L, SubPackets s, t -> sprintf "EQ%d (%d) [ %s ]" t (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    match pkt.Type, pkt.Data with
+    | 0L, SubPackets s -> sprintf "SUM (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 1L, SubPackets s -> sprintf "MUL (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 2L, SubPackets s -> sprintf "MIN (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 3L, SubPackets s -> sprintf "MAX (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 4L, Value n -> sprintf "%d" n
+    | 5L, SubPackets s -> sprintf "GT (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 6L, SubPackets s -> sprintf "LT (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
+    | 7L, SubPackets s -> sprintf "EQ (%d) [ %s ]" (Seq.length s) (s |> Seq.map formatPacket |> String.concat ",")
 
 let day16parse1 data =
     parse [] data |> fst |> Seq.head |> countVersions
