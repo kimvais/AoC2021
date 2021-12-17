@@ -189,7 +189,7 @@ let ``day 17 trajectories`` () =
     |> Set.difference input |> should be Empty
     
 [<Fact>]
-let ``day 17, part 1`` =
+let ``day 17, part 1`` () =
     day17 20 30 -10 -5 () |> should equal 45L
     day17 201 230 -99 -65 () |> should equal 4851L
 
