@@ -170,7 +170,7 @@ let ``day 16, part 2`` () =
 
 [<Fact>]
 let ``day 17 trajectories`` () =
-    let launch, potentialVs = getParameters 20 -10 30 -5
+    let launch, potentialVs = getParameters 20 30 -10 -5
 
     let vectors =
         potentialVs
