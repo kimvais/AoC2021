@@ -50,8 +50,6 @@ let getParameters x0 y0 x1 y1 =
     launch, potentialVs
 
 let day17 x0 x1 y0 y1 () =
-    // target area: x=201..230, y=-99..-65
-    // target area: x=20..30, y=-10..-5
     let launch, potentialVs = getParameters x0 y0 x1 y1
 
     let launchProbe s =
@@ -70,17 +68,5 @@ let day17part2 x0 x1 y0 y1 () =
         potentialVs
         |> Seq.map (launch >> isHit2)
         |> Seq.choose id
-    (*
-    let input =
-        readInput "test17b"
-        |> Seq.map (splitS "\s+")
-        |> Seq.concat
-        |> Seq.map (split ',' >> fun [| a; b |] -> int a, int b)
-        |> Set.ofSeq
-
-    vectors
-    |> Set.ofSeq
-    |> Set.difference input
-    |> printfn "%A"
-    *)
+    
     Seq.length vectors |> int64
