@@ -19,6 +19,7 @@ open AoC2021.Day12
 open AoC2021.Day13
 open AoC2021.Day14
 open AoC2021.Day16
+open AoC2021.Day17
 
 [<Fact>]
 let ``day 1, part 1`` () =
@@ -111,13 +112,13 @@ let ``day 9, part 2`` () =
 
 [<Fact>]
 let ``day 10, part 1`` () =
-    day10 "test10" () |> should equal 0L
-    day10 "10" () |> should equal 0L
+    day10 "test10" () |> should equal 26397L
+    day10 "10" () |> should equal 367227L
 
 [<Fact>]
 let ``day 10, part 2`` () =
     day10part2 "test10" () |> should equal 288957L
-    day10part2 "10" () |> should equal 0L
+    day10part2 "10" () |> should equal 3583341858L
 
 [<Fact>]
 let ``day 11, part 1`` () =
@@ -166,3 +167,33 @@ let ``day 16, part 2`` () =
     d16parse2 "D8005AC2A8F0" |> should equal 1L
     d16parse2 "F600BC2D8F" |> should equal 0L
     d16parse2 "9C0141080250320F1802104A08" |> should equal 1L
+
+[<Fact>]
+let ``day 17 trajectories`` () =
+    let launch, potentialVs = getParameters 20 -10 30 -5
+
+    let vectors =
+        potentialVs
+        |> Seq.map (launch >> isHit2)
+        |> Seq.choose id
+    
+    let input =
+        readInput "test17b"
+        |> Seq.map (splitS "\s+")
+        |> Seq.concat
+        |> Seq.map (split ',' >> fun [| a; b |] -> int a, int b)
+        |> Set.ofSeq
+
+    vectors
+    |> Set.ofSeq
+    |> Set.difference input |> should be Empty
+    
+[<Fact>]
+let ``day 17, part 1`` =
+    day17 20 30 -10 -5 () |> should equal 45L
+    day17 201 230 -99 -65 () |> should equal 4851L
+
+[<Fact>]
+let ``day 17, part 2`` () =
+    day17part2 20 30 -10 -5 () |> should equal 112L
+    day17part2  201 230 -99 -65 () |> should equal 1739L
