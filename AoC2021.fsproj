@@ -24,12 +24,14 @@
         <Compile Include="Day15.fs" />
         <Compile Include="Day16.fs" />
         <Compile Include="Day17.fs" />
+        <Compile Include="Day18.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="Program.fs" />
         <Folder Include="input" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Chiron" Version="7.0.0-beta-180105" />
       <PackageReference Include="FsUnit.xUnit" Version="4.1.0" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     </ItemGroup>

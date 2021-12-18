@@ -157,7 +157,7 @@ let d16parse2 data =
 let day16part2 fn () =
     let packet =
         "9C0141080250320F1802104A08"
-        |> hexToBits
+        |> hexToBits |> Seq.cache
         |> parse []
         |> fst
         |> Seq.head
