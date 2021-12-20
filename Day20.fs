@@ -9,13 +9,6 @@ let symbolToBool =
     | '#' -> true
     | c -> failwith $"invalid character '%c{c}' in input"
 
-let checkMargins image =
-    let top = image |> Array.head |> Seq.exists id
-    let bottom = image |> Array.last |> Seq.exists id
-    let left = image |> Array.map Array.head |> Seq.exists id
-    let right = image |> Array.map Array.last |> Seq.exists id
-    top, bottom, left, right
-
 let getArr (arr: bool [] []) def x y =
     match arr |> Array.tryItem x with
     | None -> def
@@ -35,42 +28,21 @@ let coords x y =
       (x + 1, y)
       (x + 1, y + 1) ]
 
-let padRow sym left right row =
-    match left, right with
-    | true, true ->
-        Array.concat [ [| sym; sym |]
-                       row
-                       [| sym; sym |] ]
-    | true, false -> Array.concat [ [| sym; sym |]; row ]
-    | false, true -> Array.concat [ row; [| sym; sym |]]
-    | _ -> row
+let padRow sym row =
+    Array.concat [ [| sym; sym |]
+                   row
+                   [| sym; sym |] ]
 
 let padImage sym (image: bool [] []) =
-    let top, bottom, left, right = checkMargins image
-    let im = image |> Array.map (padRow sym left right)
+    let im = image |> Array.map (padRow sym)
     let rowLen = Array.length (Array.head im)
-    let createEmptyRow () = Array.create rowLen sym 
+    let createEmptyRow () = Array.create rowLen sym
 
-    match top, bottom with
-    | true, true ->
-        Array.concat [|
-                        [| createEmptyRow () |]
-                        [| createEmptyRow () |]
-                        im
-                        [| createEmptyRow () |]
-                        [| createEmptyRow () |]
-                         |]
-    | true, false ->
-        Array.concat [|
-                        [| createEmptyRow () |]
-                        [| createEmptyRow () |]
-                        im |]
-    | false, true ->
-        Array.concat [| im
-                        [| createEmptyRow () |]
-                        [| createEmptyRow () |]
-                        |]
-    | false, false -> im
+    Array.concat [| [| createEmptyRow () |]
+                    [| createEmptyRow () |]
+                    im
+                    [| createEmptyRow () |]
+                    [| createEmptyRow () |] |]
 
 let enhancePixel (algo: bool array) def image x y _ =
     let i =
@@ -91,9 +63,11 @@ let enhanceImage algo sym image =
 
     printfn "After padding: "
     printIm image'
+
     let image'' =
         image'
-        |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel  algo sym image' x)))
+        |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel algo sym image' x)))
+
     printfn "After transform:"
     printIm image''
     image''
@@ -101,8 +75,8 @@ let enhanceImage algo sym image =
 let generate rounds fn =
     let input = readInput fn
     let enchanceAlgorithm = input |> Seq.head |> Seq.map symbolToBool |> Array.ofSeq
-    let enhance  = enhanceImage enchanceAlgorithm
-    let folder state i = enhance (i%2 = 0) state
+    let enhance = enhanceImage enchanceAlgorithm
+    let folder state i = enhance (i % 2 = 1) state
 
     let image =
         input
@@ -110,7 +84,7 @@ let generate rounds fn =
         |> Seq.map (Array.ofSeq >> Array.map symbolToBool)
         |> Array.ofSeq
 
-    [ 0 .. (rounds-1) ] |> Seq.fold folder image
+    [ 0 .. (rounds - 1) ] |> Seq.fold folder image
 
 let solve rounds fn =
     let image = generate rounds fn
