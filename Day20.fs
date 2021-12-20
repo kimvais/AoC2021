@@ -16,15 +16,13 @@ let checkMargins image =
     let right = image |> Array.map Array.last |> Seq.exists id
     top, bottom, left, right
 
-let getArr arr x y =
-    let row =
-        match arr |> Array.tryItem x with
-        | None -> Array.create (arr |> Array.head |> Array.length) false
-        | Some r -> r
-
-    match row |> Array.tryItem y with
+let getArr (arr: bool [] []) x y =
+    match arr |> Array.tryItem x with
     | None -> false
-    | Some p -> p
+    | Some r ->
+        match r |> Array.tryItem y with
+        | None -> false
+        | Some p -> p
 
 let coords x y =
     [ (x - 1, y - 1)
@@ -37,21 +35,21 @@ let coords x y =
       (x + 1, y)
       (x + 1, y + 1) ]
 
-let padRow left right row =
+let padRow sym left right row =
     match left, right with
     | true, true ->
-        Array.concat [ [| false |]
+        Array.concat [ [| sym |]
                        row
-                       [| false |] ]
-    | true, false -> Array.concat [ [| false |]; row ]
-    | false, true -> Array.concat [ row; [| false |] ]
+                       [| sym |] ]
+    | true, false -> Array.concat [ [| sym |]; row ]
+    | false, true -> Array.concat [ row; [| sym |] ]
     | _ -> row
 
-let padImage (image: bool [] []) =
+let padImage sym (image: bool [] []) =
     let top, bottom, left, right = checkMargins image
-    let im = image |> Array.map (padRow left right)
+    let im = image |> Array.map (padRow sym left right)
     let rowLen = Array.length (Array.head im)
-    let createEmptyRow () = (Array.create rowLen false)
+    let createEmptyRow () = Array.create rowLen sym 
 
     match top, bottom with
     | true, true ->
@@ -64,7 +62,7 @@ let padImage (image: bool [] []) =
     | false, true ->
         Array.concat [| im
                         [| createEmptyRow () |] |]
-    | _ -> im
+    | false, false -> im
 
 let enhancePixel (algo: bool array) image x y _ =
     let i =
@@ -78,28 +76,33 @@ let enhancePixel (algo: bool array) image x y _ =
 
 let printIm = printImage (boolToSymbol "." "#")
 
-let enhanceImage algo image =
-    let image' = image |> padImage 
+let enhanceImage algo sym image =
+    let image' = image |> padImage sym
 
-    // printIm image'
-    let image'' = image' |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel algo image' x) ))
-    // printIm image''
+    printIm image'
+    let image'' =
+        image'
+        |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel algo image' x)))
+    printIm image''
     image''
-    
+
 let generate rounds fn =
     let input = readInput fn
     let enchanceAlgorithm = input |> Seq.head |> Seq.map symbolToBool |> Array.ofSeq
-    let enhance = enhanceImage enchanceAlgorithm
-    let folder state _ = enhance state
+    let enhance  = enhanceImage enchanceAlgorithm
+    let folder state i = enhance ((i%2 = 1) <> (Array.head enchanceAlgorithm)) state
+
     let image =
         input
         |> Seq.skip 2
         |> Seq.map (Array.ofSeq >> Array.map symbolToBool)
         |> Array.ofSeq
-    [1..rounds] |> Seq.fold folder image
+
+    [ 0 .. (rounds-1) ] |> Seq.fold folder image
 
 let solve rounds fn =
     let image = generate rounds fn
+
     image
     |> Seq.concat
     |> Seq.sumBy
@@ -108,5 +111,4 @@ let solve rounds fn =
         | true -> 1)
     |> int64
 
-let day20 fn () =
-    solve 2 fn
+let day20 fn () = solve 2 fn
