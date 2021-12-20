@@ -75,8 +75,9 @@ let enhanceImage algo sym image =
 let generate rounds fn =
     let input = readInput fn
     let enchanceAlgorithm = input |> Seq.head |> Seq.map symbolToBool |> Array.ofSeq
+    let flipper = function | false -> (fun _ -> false) | true-> (fun i -> i % 2 = 1)
     let enhance = enhanceImage enchanceAlgorithm
-    let folder state i = enhance (i % 2 = 1) state
+    let folder state i = enhance (flipper (Array.head enchanceAlgorithm) i) state
 
     let image =
         input
@@ -86,7 +87,7 @@ let generate rounds fn =
 
     [ 0 .. (rounds - 1) ] |> Seq.fold folder image
 
-let solve rounds fn =
+let day20 fn rounds () =
     let image = generate rounds fn
 
     image
@@ -96,5 +97,3 @@ let solve rounds fn =
         | false -> 0
         | true -> 1)
     |> int64
-
-let day20 fn () = solve 2 fn

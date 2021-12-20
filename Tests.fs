@@ -18,8 +18,12 @@ open AoC2021.Day11
 open AoC2021.Day12
 open AoC2021.Day13
 open AoC2021.Day14
+open AoC2021.Day15
 open AoC2021.Day16
 open AoC2021.Day17
+open AoC2021.Day18
+// open AoC2021.Day19
+open AoC2021.Day20
 
 [<Fact>]
 let ``day 1, part 1`` () =
@@ -197,3 +201,13 @@ let ``day 17, part 1`` () =
 let ``day 17, part 2`` () =
     day17part2 20 30 -10 -5 () |> should equal 112L
     day17part2  201 230 -99 -65 () |> should equal 1739L
+
+[<Fact>]
+let ``day 20, part 1`` () =
+    day20 "test20" 2 () |> should equal 35L 
+    day20 "20" 2 () |> should equal 5081L
+    
+[<Fact>]
+let ``day 20, part 2`` () =
+    day20 "test20" 50 () |> should equal 3351L
+    day20 "20" 50 () |> should equal 15088L
