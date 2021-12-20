@@ -49,19 +49,19 @@ let padRow left right row =
 
 let padImage top bottom (im: bool [] []) =
     let rowLen = Array.length (Array.head im)
-    let createEmptyRow rowLen = (Array.create rowLen false)
+    let createEmptyRow () = (Array.create rowLen false)
 
     match top, bottom with
     | true, true ->
-        Array.concat [| [| createEmptyRow rowLen |]
+        Array.concat [| [| createEmptyRow () |]
                         im
-                        [| createEmptyRow rowLen |] |]
+                        [| createEmptyRow () |] |]
     | true, false ->
-        Array.concat [| [| createEmptyRow rowLen |]
+        Array.concat [| [| createEmptyRow () |]
                         im |]
     | false, true ->
         Array.concat [| im
-                        [| createEmptyRow rowLen |] |]
+                        [| createEmptyRow () |] |]
     | _ -> im
 
 let enhancePixel (algo: bool array) image x y _ =
@@ -74,34 +74,37 @@ let enhancePixel (algo: bool array) image x y _ =
 
     algo.[i]
 
-let enhance algo image =
-    let top, bottom, left, right = checkMargins image
+let printIm = printImage (boolToSymbol "." "#")
 
-    image
+let enhanceImage algo image =
+    let top, bottom, left, right = checkMargins image
+    let image' = image |> padImage top bottom |> Array.map (padRow left right)
+
+    printIm image'
+    image'
     |> Array.mapi
         (fun x row ->
             (row
              |> Array.mapi (enhancePixel algo image x)
-             |> padRow left right))
-    |> padImage top bottom
+             ))
 
-
-let printIm = printImage (boolToSymbol "." "#")
 
 let day20 fn () =
     let input = readInput fn
     let enchanceAlgorithm = input |> Seq.head |> Seq.map symbolToBool |> Array.ofSeq
-
+    let enhance = enhanceImage enchanceAlgorithm
     let image =
         input
         |> Seq.skip 2
         |> Seq.map (Array.ofSeq >> Array.map symbolToBool)
         |> Array.ofSeq
 
-    printIm image
-
-    let image' = image |> enhance enchanceAlgorithm |> enhance enchanceAlgorithm
+    checkMargins image |> printfn "%A"
+    printfn $"%d{Array.length image} x %d{Array.length (Array.head image)}"
+    image |> enhance |> printIm
+    let image' = image |> enhance  |> enhance 
     printIm image'
+    printfn $"%d{Array.length image'} x %d{Array.length (Array.head image')}"
 
     image'
     |> Seq.concat
