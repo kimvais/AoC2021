@@ -51,14 +51,33 @@ let hexToBits (value: seq<char>) =
     |> Seq.map (fun c -> int c - int '0')
 
 let hexToBits2 value =
-    let raw = Convert.ToString(Convert.ToInt64(value.ToString(), 16), 2) |> Seq.map charToInt
+    let raw =
+        Convert.ToString(Convert.ToInt64(value.ToString(), 16), 2)
+        |> Seq.map charToInt
+
     match Seq.length raw % 8 with
-    | 6 -> Seq.append [0;0] raw
+    | 6 -> Seq.append [ 0; 0 ] raw
     | 0 -> raw
     | _ -> failwith "Invalid input"
-    
+
 let bitsToInt bits =
     let s =
         bits |> Seq.map string |> String.concat ""
 
     Convert.ToInt64(s, 2)
+
+let boolToSymbol falseC trueC =
+    function
+    | false -> falseC
+    | true -> trueC
+
+let printImage boolToString (image: bool [] []) =
+    image
+    |> Array.iter
+        (fun row ->
+            (row
+             |> Array.map boolToString
+             |> String.concat ""
+             |> printfn "%s"))
+
+    printfn ""

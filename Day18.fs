@@ -15,5 +15,5 @@ let rec parse acc depth (data: list<char>) =
         | n -> parse (acc @ [ (charToL n, depth) ]) depth tail
 
 let day18 s () =
-    parse [] 0 (List.ofSeq s) |> printfn "%A"
+    parse [] 0 (List.ofSeq s) |> List.groupBy snd |> printfn "%A"
     0L

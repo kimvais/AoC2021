@@ -3,21 +3,7 @@ module AoC2021.Day13
 open System
 open AoC2021.Utils
 
-let boolToSymbol =
-    function
-    | false -> " "
-    | true -> "\u2588"
 
-let printPaper (paper: bool [] []) =
-    paper
-    |> Array.iter
-        (fun row ->
-            (row
-             |> Array.map boolToSymbol
-             |> String.concat ""
-             |> printfn "%s"))
-
-    printfn ""
 
 let parse fn =
     let [ dotInput; instructionInput ] =
@@ -105,5 +91,5 @@ let day13 fn () =
 
 let day13part2 fn () =
     let paper, folds = parse fn
-    folds |> Array.fold folder paper |> printPaper
+    folds |> Array.fold folder paper |> printImage (boolToSymbol "0" "\u2588")
     0L
