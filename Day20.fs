@@ -47,7 +47,9 @@ let padRow left right row =
     | false, true -> Array.concat [ row; [| false |] ]
     | _ -> row
 
-let padImage top bottom (im: bool [] []) =
+let padImage (image: bool [] []) =
+    let top, bottom, left, right = checkMargins image
+    let im = image |> Array.map (padRow left right)
     let rowLen = Array.length (Array.head im)
     let createEmptyRow () = (Array.create rowLen false)
 
@@ -77,39 +79,34 @@ let enhancePixel (algo: bool array) image x y _ =
 let printIm = printImage (boolToSymbol "." "#")
 
 let enhanceImage algo image =
-    let top, bottom, left, right = checkMargins image
-    let image' = image |> padImage top bottom |> Array.map (padRow left right)
+    let image' = image |> padImage 
 
-    printIm image'
-    image'
-    |> Array.mapi
-        (fun x row ->
-            (row
-             |> Array.mapi (enhancePixel algo image x)
-             ))
-
-
-let day20 fn () =
+    // printIm image'
+    let image'' = image' |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel algo image' x) ))
+    // printIm image''
+    image''
+    
+let generate rounds fn =
     let input = readInput fn
     let enchanceAlgorithm = input |> Seq.head |> Seq.map symbolToBool |> Array.ofSeq
     let enhance = enhanceImage enchanceAlgorithm
+    let folder state _ = enhance state
     let image =
         input
         |> Seq.skip 2
         |> Seq.map (Array.ofSeq >> Array.map symbolToBool)
         |> Array.ofSeq
+    [1..rounds] |> Seq.fold folder image
 
-    checkMargins image |> printfn "%A"
-    printfn $"%d{Array.length image} x %d{Array.length (Array.head image)}"
-    image |> enhance |> printIm
-    let image' = image |> enhance  |> enhance 
-    printIm image'
-    printfn $"%d{Array.length image'} x %d{Array.length (Array.head image')}"
-
-    image'
+let solve rounds fn =
+    let image = generate rounds fn
+    image
     |> Seq.concat
     |> Seq.sumBy
         (function
         | false -> 0
         | true -> 1)
     |> int64
+
+let day20 fn () =
+    solve 2 fn
