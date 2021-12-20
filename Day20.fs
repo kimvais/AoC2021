@@ -16,12 +16,12 @@ let checkMargins image =
     let right = image |> Array.map Array.last |> Seq.exists id
     top, bottom, left, right
 
-let getArr (arr: bool [] []) x y =
+let getArr (arr: bool [] []) def x y =
     match arr |> Array.tryItem x with
-    | None -> false
+    | None -> def
     | Some r ->
         match r |> Array.tryItem y with
-        | None -> false
+        | None -> def
         | Some p -> p
 
 let coords x y =
@@ -38,11 +38,11 @@ let coords x y =
 let padRow sym left right row =
     match left, right with
     | true, true ->
-        Array.concat [ [| sym |]
+        Array.concat [ [| sym; sym |]
                        row
-                       [| sym |] ]
-    | true, false -> Array.concat [ [| sym |]; row ]
-    | false, true -> Array.concat [ row; [| sym |] ]
+                       [| sym; sym |] ]
+    | true, false -> Array.concat [ [| sym; sym |]; row ]
+    | false, true -> Array.concat [ row; [| sym; sym |]]
     | _ -> row
 
 let padImage sym (image: bool [] []) =
@@ -53,21 +53,29 @@ let padImage sym (image: bool [] []) =
 
     match top, bottom with
     | true, true ->
-        Array.concat [| [| createEmptyRow () |]
+        Array.concat [|
+                        [| createEmptyRow () |]
+                        [| createEmptyRow () |]
                         im
-                        [| createEmptyRow () |] |]
+                        [| createEmptyRow () |]
+                        [| createEmptyRow () |]
+                         |]
     | true, false ->
-        Array.concat [| [| createEmptyRow () |]
+        Array.concat [|
+                        [| createEmptyRow () |]
+                        [| createEmptyRow () |]
                         im |]
     | false, true ->
         Array.concat [| im
-                        [| createEmptyRow () |] |]
+                        [| createEmptyRow () |]
+                        [| createEmptyRow () |]
+                        |]
     | false, false -> im
 
-let enhancePixel (algo: bool array) image x y _ =
+let enhancePixel (algo: bool array) def image x y _ =
     let i =
         coords x y
-        |> List.collect (fun (x, y) -> [ (getArr image x y) ])
+        |> List.collect (fun (x, y) -> [ (getArr image def x y) ])
         |> List.map (boolToSymbol 0 1)
         |> bitsToInt
         |> int
@@ -77,12 +85,16 @@ let enhancePixel (algo: bool array) image x y _ =
 let printIm = printImage (boolToSymbol "." "#")
 
 let enhanceImage algo sym image =
+    printfn "Before padding: "
+    printIm image
     let image' = image |> padImage sym
 
+    printfn "After padding: "
     printIm image'
     let image'' =
         image'
-        |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel algo image' x)))
+        |> Array.mapi (fun x row -> (row |> Array.mapi (enhancePixel  algo sym image' x)))
+    printfn "After transform:"
     printIm image''
     image''
 
@@ -90,7 +102,7 @@ let generate rounds fn =
     let input = readInput fn
     let enchanceAlgorithm = input |> Seq.head |> Seq.map symbolToBool |> Array.ofSeq
     let enhance  = enhanceImage enchanceAlgorithm
-    let folder state i = enhance ((i%2 = 1) <> (Array.head enchanceAlgorithm)) state
+    let folder state i = enhance (i%2 = 0) state
 
     let image =
         input
