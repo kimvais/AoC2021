@@ -6,8 +6,7 @@ open System.Text.RegularExpressions
 
 let readLines filePath = File.ReadLines(filePath)
 
-let readInput (s: string) =
-    readLines (__SOURCE_DIRECTORY__ + (sprintf "/input/%s.txt" s))
+let readInput (s: string) = readLines (__SOURCE_DIRECTORY__ + (sprintf "/input/%s.txt" s))
 
 let getProblem (a: seq<string>) : string = a |> Seq.head
 
@@ -32,10 +31,7 @@ let splitByLinefeed (s: string) = s.Split '\n'
 
 let splitByTwoLinefeeds s = Regex.Split(s, "\n\n")
 
-let readInputDelimByEmptyLine inputfile =
-    readInput inputfile
-    |> String.concat "\n"
-    |> splitByTwoLinefeeds
+let readInputDelimByEmptyLine inputfile = readInput inputfile |> String.concat "\n" |> splitByTwoLinefeeds
 
 let charToL (c: char) = int64 c - int64 '0'
 
@@ -43,10 +39,7 @@ let charToInt = charToL >> int
 
 let hexToBits (value: seq<char>) =
     value
-    |> Seq.map
-        (fun n ->
-            $"%04d{Convert.ToString(Convert.ToInt16(n.ToString(), 16), 2)
-                   |> int}")
+    |> Seq.map (fun n -> $"%04d{Convert.ToString(Convert.ToInt16(n.ToString(), 16), 2) |> int}")
     |> String.concat ""
     |> Seq.map (fun c -> int c - int '0')
 
@@ -61,8 +54,7 @@ let hexToBits2 value =
     | _ -> failwith "Invalid input"
 
 let bitsToInt bits =
-    let s =
-        bits |> Seq.map string |> String.concat ""
+    let s = bits |> Seq.map string |> String.concat ""
 
     Convert.ToInt64(s, 2)
 
@@ -73,11 +65,13 @@ let boolToSymbol falseC trueC =
 
 let printImage boolToString (image: bool [] []) =
     image
-    |> Array.iter
-        (fun row ->
-            (row
-             |> Array.map boolToString
-             |> String.concat ""
-             |> printfn "%s"))
+    |> Array.iter (fun row -> (row |> Array.map boolToString |> String.concat "" |> printfn "%s"))
 
     printfn ""
+
+let rec cartesian inputs =
+    match inputs with
+    | h :: [] -> List.fold (fun acc elem -> [ elem ] :: acc) [] h
+    | h :: t ->
+        List.fold (fun cacc celem -> (List.fold (fun acc elem -> (elem :: celem) :: acc) [] h) @ cacc) [] (cartesian t)
+    | _ -> []
