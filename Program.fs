@@ -20,6 +20,7 @@ open AoC2021.Day16
 open AoC2021.Day17
 open AoC2021.Day18
 open AoC2021.Day20
+open AoC2021.Day21
 
 [<EntryPoint>]
 let main argv =
@@ -51,7 +52,7 @@ let main argv =
     | "17" -> day17 201 230 -99 -65 ()
     | "17b" -> day17part2 201 230 -99 -65 ()
     // | "test" -> day18 "[[[[[9,8],1],2],3],4]" ()
-    | "test" -> day20 "test20" 2 ()
+    | "test" -> day21 7 1 ()
     |> printfn "%d"
     0
    
