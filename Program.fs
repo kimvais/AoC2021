@@ -52,7 +52,7 @@ let main argv =
     | "17" -> day17 201 230 -99 -65 ()
     | "17b" -> day17part2 201 230 -99 -65 ()
     // | "test" -> day18 "[[[[[9,8],1],2],3],4]" ()
-    | "test" -> day21 7 1 ()
+    | "test" -> day21part2 7 1 ()
     |> printfn "%d"
     0
    
