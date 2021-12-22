@@ -1,6 +1,7 @@
 module AoC2021.Utils
 
 open System
+open System.Collections.Generic
 open System.IO
 open System.Text.RegularExpressions
 
@@ -75,3 +76,14 @@ let rec cartesian inputs =
     | h :: t ->
         List.fold (fun cacc celem -> (List.fold (fun acc elem -> (elem :: celem) :: acc) [] h) @ cacc) [] (cartesian t)
     | _ -> []
+
+let memoize func =
+    let cache = Dictionary<_, _>();
+    fun key ->
+        let exists, value = cache.TryGetValue key
+        if exists then
+            value
+        else
+            let value = func key
+            cache.Add(key, value)
+            value
